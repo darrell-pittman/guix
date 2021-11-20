@@ -212,4 +212,13 @@ bar {
     }
 }
 
+# Turn of laptop display when lid closed
+
+set $laptop eDP-1
+bindswitch lid:on output $laptop disable
+bindswitch lid:off output $laptop enable
+
+# Display Brightness
+bindsym XF86MonBrightnessDown exec light -U 4
+bindsym XF86MonBrightnessUp exec light -A 4
 include /gnu/store/g1hx2ji71f0ykwg9iq5np2h7cl15b2jm-sway-1.5.1/etc/sway/config.d/*

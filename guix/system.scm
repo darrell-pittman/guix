@@ -23,6 +23,17 @@
                    ", ATTRS{name}==\"AlpsPS/2 ALPS DualPoint Stick\""
                    ", SYMLINK+=\"input/mouse-stick\"")))
 
+(define %backlight-rules
+  (udev-rule
+    "90-backlight.rules"
+    (string-append "ACTION==\"add\""
+                   ", SUBSYSTEM==\"backlight\""
+                   ", RUN+=\"/bin/chgrp video /sys/class/backlight/%k/brightness\""
+                   "\n"
+                   "ACTION==\"add\""
+                   ", SUBSYSTEM==\"backlight\""
+                   ", RUN+=\"/bin/chmod g+w /sys/class/backlight/%k/brightness\"")))
+
 (operating-system
   (kernel linux)
   (kernel-arguments (cons* "video=1280x720" 
@@ -89,7 +100,14 @@
 
   ;; Add services to the baseline: a DHCP client
   (services (append (list (service dhcp-client-service-type)
+                          (extra-special-file 
+                             "/bin/chmod" 
+                             (file-append coreutils "/bin/chmod"))
+                          (extra-special-file 
+                             "/bin/chgrp" 
+                             (file-append coreutils "/bin/chgrp"))
                           (udev-rules-service 'mouse-names %mouse-name-rules)
+                          (udev-rules-service 'backlight %backlight-rules)
                           (elogind-service #:config 
                             (elogind-configuration
                               (handle-lid-switch-external-power 'suspend)))
@@ -107,7 +125,4 @@
             (specification->package "swaylock") 
             "/bin/swaylock")))
       %setuid-programs))) 
-
-
-
 
