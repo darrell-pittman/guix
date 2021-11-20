@@ -50,6 +50,7 @@ input type:touchpad {
 
 input type:keyboard {
   xkb_options caps:ctrl_modifier
+  xkb_numlock enabled
 }
 #
 # You can get the names of your inputs by running: swaymsg -t get_inputs
