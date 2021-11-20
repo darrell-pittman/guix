@@ -2,6 +2,7 @@
 ;; for a "bare bones" setup, with no X11 display server.
 
 (use-modules (gnu)
+             (gnu system setuid)
              (gnu services desktop)
              (nongnu packages linux)
              (nongnu system linux-initrd))
@@ -83,16 +84,30 @@
   ;; Globally-installed packages.
   (packages (append (map 
                        specification->package
-                       '("screen" "nss-certs" "sway"))
+                       '("screen" "nss-certs" "sway" "swaylock"))
                     %base-packages))
 
   ;; Add services to the baseline: a DHCP client
   (services (append (list (service dhcp-client-service-type)
                           (udev-rules-service 'mouse-names %mouse-name-rules)
-                          (elogind-service #:config (elogind-configuration))
+                          (elogind-service #:config 
+                            (elogind-configuration
+                              (handle-lid-switch-external-power 'suspend)))
                           (service wpa-supplicant-service-type 
                             (wpa-supplicant-configuration
                               (config-file (local-file "wpa-supplicant.conf"))
                               (interface "wlp1s0"))))
-                    %base-services)))
+                    %base-services))
+
+  (setuid-programs
+    (cons* 
+      (setuid-program
+        (program 
+          (file-append 
+            (specification->package "swaylock") 
+            "/bin/swaylock")))
+      %setuid-programs))) 
+
+
+
 
