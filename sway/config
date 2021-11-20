@@ -1,7 +1,3 @@
-# Default config for sway
-#
-# Copy this to ~/.config/sway/config and edit it to your liking.
-#
 # Read `man 5 sway` for a complete reference.
 
 ### Variables
@@ -50,6 +46,10 @@ output * bg /gnu/store/g1hx2ji71f0ykwg9iq5np2h7cl15b2jm-sway-1.5.1/share/backgro
 #
 input type:touchpad {
   events disabled
+}
+
+input type:keyboard {
+  xkb_options caps:ctrl_modifier
 }
 #
 # You can get the names of your inputs by running: swaymsg -t get_inputs
