@@ -131,6 +131,8 @@ input type:keyboard {
     bindsym $mod+Shift+9 move container to workspace number 9
     bindsym $mod+Shift+0 move container to workspace number 10
     # Note: workspaces can have any name you want, not just numbers.
+    
+    bindsym $mod+z workspace back_and_forth
     # We just use 1-10 as the default.
 #
 # Layout stuff:
@@ -212,7 +214,7 @@ bar {
     }
 }
 
-# Turn of laptop display when lid closed
+# Turn off laptop display when lid closed
 
 set $laptop eDP-1
 bindswitch --reload --locked lid:on output $laptop disable
@@ -223,8 +225,12 @@ exec_always /home/darrell/bin/sway-display.sh
 bindsym XF86MonBrightnessDown exec light -U 4
 bindsym XF86MonBrightnessUp exec light -A 4
 
-# Start Redshift
+# Start Apps
 exec_always /home/darrell/bin/dimmer.sh
+exec_always /home/darrell/bin/sound.sh
+
+# Apps
+bindsym $mod+bracketright exec nohup chromium &>/dev/null &
 
 include /gnu/store/g1hx2ji71f0ykwg9iq5np2h7cl15b2jm-sway-1.5.1/etc/sway/config.d/*
 

@@ -4,6 +4,9 @@
 (use-modules (gnu)
              (gnu system setuid)
              (gnu services desktop)
+             (gnu services dbus)
+             (gnu services avahi)
+             (gnu services sound)
              (nongnu packages linux)
              (nongnu system linux-initrd))
 
@@ -44,6 +47,7 @@
   (initrd microcode-initrd)
   (firmware (cons* iwlwifi-firmware
                    amdgpu-firmware
+                   ibt-hw-firmware
                    %base-firmware))
   (host-name "guix_laptop")
   (timezone "America/St_Johns")
@@ -88,18 +92,36 @@
                   (group "users")
                   (home-directory "/home/darrell")
                   (supplementary-groups
-                    '("wheel" "netdev" "audio" "video")))
+                    '("wheel" "netdev" "audio" "video" "lp")))
                 %base-user-accounts))
   
 
   ;; Globally-installed packages.
   (packages (append (map 
                        specification->package
-                       '("screen" "nss-certs" "sway" "swaylock"))
+                       '("screen" 
+                         "nss-certs" 
+                         "sway" 
+                         "swaylock"))
                     %base-packages))
 
   ;; Add services to the baseline: a DHCP client
-  (services (append (list (service dhcp-client-service-type)
+  (services (append (list 
+                          fontconfig-file-system-service
+                          (service cups-pk-helper-service-type)
+                          (service connman-service-type
+                            (connman-configuration
+                              (disable-vpn? #t)))
+                          (accountsservice-service)
+                          (service pulseaudio-service-type)
+                          (service alsa-service-type)
+                          polkit-wheel-service
+                          (dbus-service 
+                            #:services (map specification->package
+                                            '("avahi")))
+                          (service avahi-service-type)
+                          (service polkit-service-type)
+                          (bluetooth-service #:auto-enable? #t)
                           (extra-special-file 
                              "/bin/chmod" 
                              (file-append coreutils "/bin/chmod"))
@@ -114,7 +136,8 @@
                           (service wpa-supplicant-service-type 
                             (wpa-supplicant-configuration
                               (config-file (local-file "wpa-supplicant.conf"))
-                              (interface "wlp1s0"))))
+                              (interface "wlp1s0")))
+                    )
                     %base-services))
 
   (setuid-programs
