@@ -225,6 +225,10 @@ exec_always /home/darrell/bin/sway-display.sh
 bindsym XF86MonBrightnessDown exec light -U 4
 bindsym XF86MonBrightnessUp exec light -A 4
 
+# Power
+bindsym $mod+Shift+s exec loginctl suspend
+bindsym $mod+Shift+Delete exec swaylock -f -c 000000
+
 # Start Apps
 exec_always /home/darrell/bin/dimmer.sh
 exec_always /home/darrell/bin/sound.sh

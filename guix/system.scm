@@ -83,6 +83,8 @@
              (device (uuid "04BF-EFE8" 'fat32))
              (type "vfat"))
            %base-file-systems))
+
+  (swap-devices (list (uuid "e14bd434-3306-43ec-bfe9-368582fe9641")))
   
   ;; This is where user accounts are specified.  The "root"
   ;; account is implicit, and is initially created with the
