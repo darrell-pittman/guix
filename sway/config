@@ -19,7 +19,7 @@ set $menu dmenu_path | dmenu | xargs swaymsg exec --
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /gnu/store/g1hx2ji71f0ykwg9iq5np2h7cl15b2jm-sway-1.5.1/share/backgrounds/sway/)
-output * bg /gnu/store/g1hx2ji71f0ykwg9iq5np2h7cl15b2jm-sway-1.5.1/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+output * bg /home/darrell/config/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 #
 # Example configuration:
 #
@@ -235,6 +235,9 @@ exec_always /home/darrell/bin/sound.sh
 
 # Apps
 bindsym $mod+bracketright exec nohup chromium &>/dev/null &
+
+# Font
+font pango:monspace 13
 
 include /gnu/store/g1hx2ji71f0ykwg9iq5np2h7cl15b2jm-sway-1.5.1/etc/sway/config.d/*
 
