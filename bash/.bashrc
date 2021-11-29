@@ -68,19 +68,11 @@ else
 fi
 
 
-[ -d $HOME/bin ] && export PATH=$HOME/bin:$PATH
+#GUIX_PROFILE="/home/darrell/.guix-profile"
+#. "$GUIX_PROFILE/etc/profile"
+
+
 [ -f $HOME/.bash_aliases ] && . $HOME/.bash_aliases
-
-#if test -z "${XDG_RUNTIME_DIR}"; then
-#    export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
-#    if ! test -d "${XDG_RUNTIME_DIR}"; then
-#        mkdir "${XDG_RUNTIME_DIR}"
-#        chmod 0700 "${XDG_RUNTIME_DIR}"
-#    fi
-#fi
-
-GUIX_PROFILE="/home/darrell/.guix-profile"
-. "$GUIX_PROFILE/etc/profile"
 
 
 if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then

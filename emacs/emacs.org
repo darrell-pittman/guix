@@ -1,0 +1,709 @@
+#+STARTUP: overview
+#+PROPERTY: header-args:emacs-lisp :tangle ~/.emacs.d/emacs.el
+* Sample init.el
+The source block below shows a sample init.el that will load this file.
+Note the :tangle no after the begin_src block : this means that this block will not end up in the generated .el file.
+#+begin_src emacs-lisp :tangle no
+  (require 'package)
+  (require 'use-package)
+  (load-file (expand-file-name "emacs.el" user-emacs-directory))
+#+end_src
+
+* Init
+#+begin_src emacs-lisp
+  ;;(add-to-list 'load-path "~/.emacs.d/customizations/")
+
+  ;; This tls setting required if emcs version >= 26.3
+  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+
+  (setq save-interprogram-paste-before-kill t)
+
+  ;; Save temporary file to tmp dir and don't create lock files
+  (setq backup-directory-alist
+        `((".*" . ,temporary-file-directory)))
+  (setq auto-save-file-name-transforms
+        `((".*" ,temporary-file-directory t))) 
+
+  (setq create-lockfiles nil)
+
+  (require 'shell)
+  (defconst
+    wgc/shell-prompt-pattern
+    shell-prompt-pattern
+    "Reg exp to match terminal prompts")
+
+#+end_src
+* Interface Tweaks
+** Look and Feel
+#+begin_src emacs-lisp
+  (setq inhibit-startup-message t)
+  (setq visible-bell t)
+
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+  (tooltip-mode -1)
+  (set-fringe-mode 10)
+
+  ;; Favour vertical split
+  ;;(setq split-height-threshold nil)
+  ;;(setq split-width-threshold 80)
+
+#+end_src
+** Line Numbers
+#+begin_src emacs-lisp
+  (column-number-mode)
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+  #+end_src
+** Fonts 
+#+begin_src emacs-lisp
+  (defvar wgc/default-font-size 120)
+  (defvar wgc/default-variable-font-size 120)
+
+  ;; Set default face
+  (set-face-attribute
+   'default nil
+   :font "Fira Code Retina"
+   :height wgc/default-font-size)
+
+  ;; Set the fixed pitch face
+  (set-face-attribute
+   'fixed-pitch nil
+   :font "Fira Code Retina"
+   :height wgc/default-font-size)
+
+  ;; Set the variable pitch face
+  (set-face-attribute
+   'variable-pitch nil
+   :font "Cantarell"
+   :height wgc/default-variable-font-size
+   :weight 'regular)
+#+end_src
+** Theme
+#+begin_src emacs-lisp
+  (use-package zenburn-theme
+    :config (load-theme 'zenburn t))
+#+end_src
+** Delimiters
+#+begin_src emacs-lisp
+  (require 'paren)
+  (set-face-background 'show-paren-match (face-background 'default))
+  (set-face-foreground 'show-paren-match "#ffff00")
+  (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
+  (show-paren-mode)
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+* Modeline
+#+begin_src emacs-lisp
+  (use-package all-the-icons
+    :if (display-graphic-p)
+    :commands all-the-icons-install-fonts
+    :config
+    (unless (find-font (font-spec :name "all-the-icons"))
+      (all-the-icons-install-fonts t)))
+
+  (use-package all-the-icons-dired
+    :if (display-graphic-p)
+    :hook(dired-mode . all-the-icons-dired-mode))
+
+  (use-package doom-modeline
+    :init (doom-modeline-mode 1)
+    :custom (doom-modeline-height 15))
+#+end_src
+* Key Bindings
+#+begin_src emacs-lisp
+  (use-package general
+    :config
+    (global-unset-key (kbd "C-SPC"))
+    (general-create-definer wgc/leader
+      :states '(normal insert visual emacs)
+      :prefix "SPC"
+      :global-prefix "C-SPC")
+    (wgc/leader
+      "b" '(:ignore t :which-key "build")
+      "o" '(:ignore t :which-key "org")
+      "g" '(:ignore t :which-key "git")
+      "t" '(:ignore t :which-key "toggles")
+      "e" '(:ignore t :which-key "edits")
+      "ec" '(:ignore t :which-key "comments")
+      "e SPC" 'set-mark-command
+      "SPC" 'universal-argument)
+    (general-def "<f5>" 'revert-buffer)
+    (general-def "<escape>" 'keyboard-escape-quit))
+#+end_src
+* IBuffer
+#+begin_src emacs-lisp
+  (use-package ibuffer
+    :custom
+    (ibuffer-show-empty-filter-groups nil)
+    (ibuffer-saved-filter-groups
+     '(("home"
+        ("emacs-config" (or (filename . ".emacs.d")
+                            (filename . "emacs-config")))
+        ("Org" (or (mode . org-mode)
+                   (filename . "org-mode")))
+        ("code" (filename . "darrell/projects"))
+        ("Web Dev" (or (mode . html-mode)
+                       (mode . css-mode)))
+        ("Magit" (name . "magit"))
+        ("ERC" (mode . erc-mode))
+        ("Help" (or (name . "\*Help\*")
+                    (name . "\*Apropos\*")
+                    (name . "\*info\*"))))))
+    (ibuffer-expert t)
+    :hook
+    (ibuffer-mode . (lambda ()
+                      (ibuffer-auto-mode 1)
+                      (ibuffer-switch-to-saved-filter-groups "home")))
+    :config
+    (general-def "C-x C-b" 'ibuffer))
+#+end_src
+* Which Key
+#+begin_src emacs-lisp
+  (use-package which-key
+    :init (which-key-mode)
+    :diminish which-key-mode
+    :custom (which-key-idle-delay 0.3))
+#+end_src
+* Ivy/Counsel/Swiper/Helpful
+#+begin_src emacs-lisp
+  (use-package ivy
+    :diminish ivy-mode
+    :bind (("C-s" . swiper)
+           :map ivy-minibuffer-map
+           ("<tab>" . ivy-alt-done)
+           ("C-l" . ivy-alt-done)
+           ("C-j" . ivy-next-line)
+           ("C-k" . ivy-previous-line)
+           :map ivy-switch-buffer-map
+           ("C-k" . ivy-previous-line)
+           ("C-l" . ivy-done)
+           ("C-d" . ivy-switch-buffer-kill)
+           :map ivy-reverse-i-search-map
+           ("C-k" . ivy-previous-line)
+           ("C-d" . ivy-reverse-i-search-kill))
+    :init
+    (ivy-mode))
+
+  (use-package counsel
+    :bind(([remap execute-extended-command] . counsel-M-x)
+          ([remap find-file] . counsel-find-file)
+          ([remap describe-bindings] . counsel-descbinds)
+          ("C-x b" . counsel-switch-buffer)
+          :map minibuffer-local-map
+          ("C-r" . counsel-minibuffer-history)))
+
+  (use-package ivy-rich
+    :init (ivy-rich-mode))
+
+  (use-package helpful
+    :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable)
+    :bind
+    ([remap describe-function] . counsel-describe-function)
+    ([remap describe-command] . helpful-command)
+    ([remap describe-variable] . counsel-describe-variable)
+    ([remap describe-key] . helpful-key))
+#+end_src
+* Evil Mode
+#+begin_src emacs-lisp
+  (use-package evil
+    :commands (evil-set-initial-state evil-collection-define-key)
+    :custom
+    (evil-want-integration t)
+    (evil-want-keybinding nil)
+    (evil-want-C-u-scroll t)
+    (evil-want-C-i-jump nil)
+    :config
+    (evil-mode 1)
+    (general-define-key
+     :keymaps 'evil-insert-state-map
+     "C-g" 'evil-normal-state
+     "C-h" 'evil-delete-backward-char-and-join)
+    (general-def 'motion
+      "j" 'evil-next-visual-line
+      "k" 'evil-previous-visual-line)
+    (evil-set-initial-state 'messages-buffer-mode 'normal)
+    (evil-set-initial-state 'dashboard-mode 'normal))
+
+  (use-package evil-collection
+    :after evil
+    :custom (evil-collection-company-use-tng nil)
+    :config
+    (evil-collection-init))
+
+  (defadvice evil-inner-word (around underscore-as-word activate)
+    (let ((table (copy-syntax-table (syntax-table))))
+      (modify-syntax-entry ?_ "w" table)
+      (with-syntax-table table
+        ad-do-it)))
+#+end_src
+* Key Chord
+#+begin_src emacs-lisp
+  (use-package key-chord
+    :after evil
+    :init (key-chord-mode 1)
+    :custom
+    (key-chord-two-keys-delay 0.2)
+    (key-chord-one-key-delay 0.3)
+    :config
+    (key-chord-define evil-insert-state-map "jk" 'evil-normal-state))
+#+end_src
+* Hydra
+#+begin_src emacs-lisp
+  (use-package hydra)
+
+  (defhydra hydra-text-scale (:timeout 4)
+    "Scale Text"
+    ("j" text-scale-increase "in")
+    ("k" text-scale-decrease "out")
+    ("f" nil "finished" :exit t))
+
+  (wgc/leader
+    "ts" '(hydra-text-scale/body :which-key "scale text"))
+#+end_src
+* Projectile
+#+begin_src emacs-lisp
+  (use-package projectile
+    :diminish projectile-mode
+    :init
+    (projectile-mode)
+    (when (file-directory-p "~/projects")
+      (setq projectile-project-search-path '("~/projects")))
+    :custom
+    (projectile-switch-project-action #'projectile-dired)
+    :config
+    (wgc/leader
+      "p" '(projectile-command-map :which-key "projectile")))
+
+
+  (use-package counsel-projectile
+    :init
+    (counsel-projectile-mode))
+#+end_src
+* Org Mode
+** Setup Functions
+#+begin_src emacs-lisp
+  (defun wgc/org-mode-setup ()
+    (org-indent-mode)
+    (variable-pitch-mode 1))
+
+  (defun wgc/org-fonts-setup ()
+    ;; Replace list hyphen with dot
+    (font-lock-add-keywords 'org-mode
+                            '(("^ *\\([-]\\) "
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+    ;; Set faces for heading levels
+    (dolist (face '((org-level-1 . 1.2)
+                    (org-level-2 . 1.1)
+                    (org-level-3 . 1.05)
+                    (org-level-4 . 1.0)
+                    (org-level-5 . 0.95)
+                    (org-level-6 . 0.9)
+                    (org-level-7 . 0.85)
+                    (org-level-8 . 0.8)))
+      (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+
+    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+    (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil
+                        :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil
+                        :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+
+    (set-face-underline 'org-ellipsis nil))
+#+end_src
+** Install
+#+begin_src emacs-lisp
+  (use-package org-contrib)
+
+  (use-package org
+    ;;:ensure org-contrib
+    ;;:pin org
+    :hook (org-mode . wgc/org-mode-setup)
+    :custom
+    (org-ellipsis " ▾")
+    (org-directory "~/Documents/org-files")
+    (org-agenda-files '("~/Documents/org-files/tasks.org"))
+    (org-agenda-start-with-log-mode t)
+    (org-log-done 'time)
+    (org-log-into-drawer t)
+    (org-confirm-babel-evaluate nil)
+    :config
+    (wgc/org-fonts-setup)
+    (add-to-list 'org-modules 'org-tempo t)
+    (add-to-list 'org-modules 'org-habit t)
+    (org-load-modules-maybe t)
+    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp") t))
+#+end_src
+** Install Evil Org
+#+begin_src emacs-lisp
+  (use-package evil-org
+    :after org
+    :hook (org-mode . (lambda () evil-org-mode))
+    :config
+    (require 'evil-org-agenda)
+    (evil-org-agenda-set-keys))
+#+end_src
+** Look and Feel
+#+begin_src emacs-lisp
+  (defun wgc/open-org-file (file-name)
+    (find-file
+     (expand-file-name "tasks.org" "~/Documents/org-files")))
+
+  (wgc/leader
+    "oa" 'org-agenda
+    "ol" 'org-store-link
+    "oc" 'org-capture
+    "of" '(:ignore t :which-key "org files")
+    "oft" '((lambda ()
+              "Open tasks.org file."
+              (interactive)
+              (wgc/open-org-file "tasks.org")) :which-key "tasks"))
+
+
+  (use-package org-bullets
+    :after org
+    :hook (org-mode . org-bullets-mode)
+    :custom
+    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+  (defun wgc/org-mode-fill-column ()
+    (setq visual-fill-column-width 100
+          visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+
+  (use-package visual-fill-column
+    :hook (org-mode . wgc/org-mode-fill-column))
+#+end_src
+** Auto Tangle Config Files
+#+begin_src emacs-lisp
+  (defun wgc/tangle-configs ()
+    "Tangle org init files."
+    (when (thread-last '("emacs.org" "emacs-private.org")
+            (mapcar (lambda (f) (expand-file-name f "~/config/emacs")))
+            (seq-some (apply-partially 'string= (buffer-file-name))))
+      (let ((org-confirm-babel-evaluate nil))
+        (org-babel-tangle))))
+
+  (add-hook 'org-mode-hook
+            (lambda () (add-hook 'after-save-hook #'wgc/tangle-configs)))
+#+end_src
+* Paredit
+#+begin_src emacs-lisp
+  (use-package paredit
+    :commands (enable-paredit-mode))
+
+  (use-package evil-paredit
+    :commands (evil-paredit-mode))
+
+  (dolist (mode '(emacs-lisp-mode-hook
+                  eval-expression-minibuffer-setup-hook
+                  ielm-mode-hook
+                  lisp-mode-hook
+                  lisp-interaction-mode-hook
+                  scheme-mode-hook))
+    (add-hook mode #'enable-paredit-mode)
+    (add-hook mode #'evil-paredit-mode))
+#+end_src
+* Expand Region
+#+begin_src emacs-lisp
+  (use-package expand-region
+    :bind
+    (("C-=" . er/expand-region)))
+#+end_src
+* Dired
+#+begin_src emacs-lisp
+  (use-package dired
+    :ensure nil
+    :commands (dired dired-jump)
+    :custom
+    (dired-auto-revert-buffer t)
+    (dired-listing-switches "-agho --group-directories-first")
+    :bind (("C-x C-j" . dired-jump))
+    :config
+    (evil-collection-define-key 'normal 'dired-mode-map
+      "h" 'dired-up-directory
+      "l" 'dired-find-file))
+
+  ;;(use-package dired-single)
+
+  (use-package dired-open
+    :config
+    ;; (add-to-list 'dired-open-functions #'dired-open-xdg t)
+    (setq dired-open-extensions '(("pdf" . "qpdfview"))))
+
+  ;;(use-package dired-hide-dotfiles
+  ;;  :hook (dired-mode . dired-hide-dotfiles-mode)
+  ;;  :config
+  ;;  (evil-collection-define-key 'normal 'dired-mode-map
+  ;;	"H" 'dired-hide-dotfiles-mode))
+#+end_src
+* Erc
+#+begin_src emacs-lisp
+  (use-package erc
+    :config
+    (evil-set-initial-state 'erc-mode 'emacs))
+#+end_src
+* Recent Files
+#+begin_src  emacs-lisp
+  (recentf-mode 1)
+  (setq recentf-max-menu-items 10)
+  (setq recentf-max-saved-items 10)
+  (wgc/leader
+    "tr" 'recentf-open-files)
+#+end_src
+* Shells
+** Term
+#+begin_src emacs-lisp
+  (use-package term
+    :custom
+    (explicit-shell-file-name "bash")
+    :config
+    (setq term-prompt-regexp wgc/shell-prompt-pattern)
+    (evil-set-initial-state 'term-mode 'emacs))
+
+  (use-package eterm-256color
+    :hook (term-mode . eterm-256color-mode))
+#+end_src
+** Shell
+#+begin_src emacs-lisp
+  (use-package shell
+    :config
+    (setq term-prompt-regexp wgc/shell-prompt-pattern)
+    (evil-set-initial-state 'shell-mode 'emacs))
+#+end_src
+** EShell
+#+begin_src emacs-lisp
+  (use-package eshell-prompt-extras)
+
+  (defun wgc/configure-eshell ()
+    ;; Save command history when commands are entered
+    (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+    ;; Truncate buffer for performance
+    (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+    (evil-define-key
+      '(normal insert visual)
+      eshell-mode-map
+      (kbd "C-r")
+      'counsel-esh-history)
+
+    (evil-define-key
+      '(normal insert visual)
+      eshell-mode-map
+      (kbd "<home>")
+      'eshell-bol)
+
+    (evil-normalize-keymaps)
+    (setq eshell-history-size              10000
+          eshell-buffer-maximum-lines      10000
+          eshell-hist-ignoredups           t
+          eshell-scroll-to-bottom-on-input t))
+
+  (use-package eshell
+    :hook
+    (eshell-first-time-mode . wgc/configure-eshell)
+    :config
+
+    (with-eval-after-load 'esh-opt
+      (setq eshell-destroy-buffer-when-process-dies t))
+    (with-eval-after-load 'em-term
+      (add-to-list 'eshell-visual-commands "vim"))
+
+    (eshell-git-prompt-use-theme 'powerline))
+
+
+  (wgc/leader
+    "te" 'eshell)
+#+end_src
+** VTerm
+#+begin_src emacs-lisp
+  (use-package vterm
+    :custom
+    (vterm-max-scrollback 10000)
+    :config
+    (evil-set-initial-state 'vterm-mode 'emacs)
+    (wgc/leader
+      :keymaps 'vterm-mode-map
+      "ee" '(vterm-send-escape :which-key "vterm escape")))
+#+end_src
+** IElm
+#+begin_src emacs-lisp
+  (use-package ielm
+    :ensure nil
+    :config
+    (evil-set-initial-state 'ielm-mode 'emacs))
+#+end_src
+* Programming
+** Commenting
+#+begin_src emacs-lisp
+  (use-package evil-nerd-commenter
+    :config
+    (wgc/leader
+      :keymaps 'prog-mode-map
+      "ecc" '(evilnc-comment-or-uncomment-lines :which-key "lines")
+      "ecl" '(evilnc-quick-comment-or-uncomment-to-the-line
+              :which-key "quick to line")
+      "ecp" '(evilnc-comment-or-uncomment-paragraphs
+              :which-key "paragraph")
+      "ecr" '(comment-or-uncomment-region :which-key "region")
+      "ecv" '(evilnc-toggle-invert-comment-line-by-line
+              :which-key "line by line")))
+#+end_src
+** Magit
+#+begin_src emacs-lisp
+  (use-package magit
+    :custom
+    (magit-display-buffer-function
+     #'magit-display-buffer-same-window-except-diff-v1)
+    (magit-no-message '("Turning on magit-auto-revert-mode..."))
+    :config
+    (evil-set-initial-state 'git-rebase-mode 'emacs)
+    (setq magit-auto-revert-mode t))
+
+  (general-def
+    "C-M-;" 'magit-status)
+
+  (wgc/leader
+    "gs" 'magit-status
+    "gd" 'magit-diff-unstaged
+    "gc" 'magit-branch-or-checkout
+    "gl" '(:ignore t :which-key "log")
+    "glc" 'magit-log-current
+    "glf" 'magit-log-buffer-file
+    "gb" 'magit-branch
+    "gP" 'magit-push-current
+    "gp" 'magit-pull-branch
+    "gf" 'magit-fetch
+    "gF" 'magit-fetch-all
+    "gr" 'magit-rebase
+    "gm" 'magit-merge
+    "gv" 'vc-refresh-state)
+#+end_src
+** Flycheck
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :hook (prog-mode . flycheck-mode)
+    :config
+    (fset 'flycheck-command-map flycheck-command-map)
+    (wgc/leader
+      :definer 'minor-mode
+      :keymaps '(flycheck-mode)
+      "!" '(flycheck-command-map :which-key "flycheck")))
+#+end_src
+** Company
+#+begin_src emacs-lisp
+  (use-package company
+    :hook
+    (prog-mode . company-mode)
+    :bind
+    (:map prog-mode-map
+          ("<tab>" . company-indent-or-complete-common))
+    (:map company-active-map
+          ("C-j" . company-select-next)
+          ("C-k" . company-select-previous)
+          ("M-j" . company-select-next-or-abort)
+          ("M-k" . company-select-previous-or-abort))
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.0))
+
+  (use-package company-box
+    :custom (company-box-doc-enable nil)
+    :hook (company-mode . company-box-mode))
+#+end_src
+** LSP Mode
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :config
+    (fset 'lsp-command-map lsp-command-map)
+    (wgc/leader
+      :definer 'minor-mode
+      :keymaps '(lsp-mode)
+      "l" '(lsp-command-map :which-key "lsp"))
+    (let ((lsp-keymap-prefix "SPC l"))
+      (lsp-enable-which-key-integration t))
+    (let ((lsp-keymap-prefix "C-SPC l"))
+      (lsp-enable-which-key-integration t)))
+
+  (use-package lsp-ui
+    :custom
+    (lsp-ui-doc-show-with-cursor nil)
+    (lsp-ui-doc-show-with-mouse nil))
+#+end_src
+** Debugger Mode
+#+begin_src emacs-lisp
+  (use-package gud
+    :ensure nil
+    :custom
+    (gdb-many-windows nil))
+#+end_src
+** Languages
+*** Rust
+#+begin_src emacs-lisp
+  (use-package flycheck-rust
+    :commands flycheck-rust-setup)
+
+  (use-package rust-mode
+    :custom
+    (rust-format-on-save t)
+    :hook
+    (flycheck-mode . flycheck-rust-setup)
+    (rust-mode . (lambda ()
+                   (lsp-deferred)
+                   (setq indent-tabs-mode nil)))
+    :config
+    (wgc/leader
+      :keymaps 'rust-mode-map
+      "br" 'rust-run
+      "bc" 'rust-compile
+      "bk" 'rust-check
+      "bt" 'rust-test))
+#+end_src
+*** C/C++
+#+begin_src emacs-lisp
+  (use-package cc-mode
+    :ensure nil
+    :hook
+    (c-mode . lsp-deferred)
+    (c++-mode . lsp-defered))
+#+end_src
+*** Toml
+#+begin_src emacs-lisp
+  (use-package toml-mode)
+#+end_src
+*** Scheme
+#+begin_src emacs-lisp
+  (use-package scheme
+    :custom
+    (scheme-program-name "guile"))
+  
+  (use-package geiser)
+  (use-package geiser-guile)
+#+end_src
+* Helper Functions
+#+begin_src emacs-lisp
+  (defun wgc/load-if-exists (f)
+    "load the elisp file only if it exists and is readable"
+    (when (file-readable-p f)
+      (load-file f)))
+#+end_src
+* Final Init
+#+begin_src emacs-lisp
+  (wgc/load-if-exists
+   (expand-file-name "emacs-private.el" user-emacs-directory))
+
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+#+end_src

@@ -8,6 +8,7 @@
              (gnu services avahi)
              (gnu services sound)
              (gnu services cups)
+             (gnu packages cups)
              (nongnu packages linux)
              (nongnu system linux-initrd))
 
@@ -112,7 +113,12 @@
   (services (append (list 
                           fontconfig-file-system-service
                           (service sane-service-type)
-                          (service cups-service-type)
+                          (service cups-service-type
+                            (cups-configuration
+                              (auto-purge-jobs? #t)
+                              (web-interface? #t)
+                              (extensions
+                                (list cups-filters hplip-minimal))))
                           (service cups-pk-helper-service-type)
                           (service connman-service-type
                             (connman-configuration
@@ -133,6 +139,9 @@
                           (extra-special-file 
                              "/bin/chgrp" 
                              (file-append coreutils "/bin/chgrp"))
+                          (extra-special-file 
+                             "/bin/grep" 
+                             (file-append grep "/bin/grep"))
                           (udev-rules-service 'mouse-names %mouse-name-rules)
                           (udev-rules-service 'backlight %backlight-rules)
                           (elogind-service #:config 
