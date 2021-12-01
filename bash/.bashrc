@@ -1,10 +1,8 @@
 # Bash initialization for interactive non-login shells and
 # for remote shells (info "(bash) Bash Startup Files").
 
-if ! pgrep -u "$USER" ssh-agent > /dev/null; then
-  # ssh-agent > "$XDG_RUNTIME_DIR/ssh-agent.env"
-  eval `ssh-agent -s`
-fi
+GPG_TTY=$(tty)
+export GPG_TTY
 
 # Export 'SHELL' to child processes.  Programs such as 'screen'
 # honor it and otherwise use /bin/sh.
