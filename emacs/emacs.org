@@ -57,8 +57,8 @@ Note the :tangle no after the begin_src block : this means that this block will 
   #+end_src
 ** Fonts 
 #+begin_src emacs-lisp
-  (defvar wgc/default-font-size 120)
-  (defvar wgc/default-variable-font-size 120)
+  (defvar wgc/default-font-size 140)
+  (defvar wgc/default-variable-font-size 140)
 
   ;; Set default face
   (set-face-attribute
@@ -81,8 +81,8 @@ Note the :tangle no after the begin_src block : this means that this block will 
 #+end_src
 ** Theme
 #+begin_src emacs-lisp
-  (use-package zenburn-theme
-    :config (load-theme 'zenburn t))
+  (use-package gruvbox-theme
+    :config (load-theme 'gruvbox-dark-hard t))
 #+end_src
 ** Delimiters
 #+begin_src emacs-lisp
@@ -620,7 +620,9 @@ Note the :tangle no after the begin_src block : this means that this block will 
     (company-idle-delay 0.0))
 
   (use-package company-box
-    :custom (company-box-doc-enable nil)
+    :custom
+    (company-box-doc-enable nil)
+    (company-box-icons-alist 'company-box-icons-all-the-icons)
     :hook (company-mode . company-box-mode))
 #+end_src
 ** LSP Mode

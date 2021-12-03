@@ -52,9 +52,6 @@ input type:keyboard {
   xkb_numlock enabled
 }
 
-default_border none
-hide_edge_borders --i3 smart
-smart_borders smart
 
 #
 # You can get the names of your inputs by running: swaymsg -t get_inputs
@@ -213,7 +210,17 @@ bindsym $mod+r mode "resize"
 #
 # Read `man 5 sway-bar` for more information about this section.
 bar {
-  swaybar_command waybar
+    position top
+
+    # When the status_command prints a new line to stdout, swaybar updates.
+    # The default just shows the current date and time.
+    status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
+
+    colors {
+        statusline #ffffff
+        background #323232
+        inactive_workspace #32323200 #32323200 #5c5c5c
+    }
 }
 
 # Turn off laptop display when lid closed
@@ -244,6 +251,7 @@ font pango:Fira Code Retina 12
 # Start Up
 exec nohup chromium &>/dev/null &
 exec nohup emacs &>/dev/null &
+exec $term &
 exec swaymsg [workspace="1"] focus
 
 include /home/darrell/config/sway/config.d/*

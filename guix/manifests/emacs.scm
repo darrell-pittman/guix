@@ -22,6 +22,7 @@
     "emacs-company-box"
     "emacs-helpful"
     "emacs-dired-hacks"
+    "emacs-all-the-icons"
     "emacs-all-the-icons-dired"
     "emacs-eshell-prompt-extras"
     "emacs-vterm"
@@ -33,4 +34,4 @@
     "emacs-visual-fill-column"
     "emacs-flycheck-rust"
     "emacs-rust-mode"
-    "emacs-zenburn-theme"))
+    "emacs-gruvbox-theme"))
