@@ -9,6 +9,7 @@
 }
 
 #workspaces button {
+    font-family: Font Awesome Free;
     margin: 7px 5px 0px 5px;
     border-top: 3px solid #888;
     border-right: 3px solid #888;
@@ -55,6 +56,10 @@
 #battery.good {background-color: #eee;}
 #battery.warning {background-color: yellow;}
 #battery.critical {background-color: red;}
+
+#memory.low {background-color: #eee;}
+#memory.medium {background-color: yellow;}
+#memory.high {background-color: red;}
 
 #mode {
     background-color: lightpink;

@@ -2,7 +2,7 @@
     "layer": "bottom",
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["sway/window"],
-    "modules-right": ["cpu","battery", "clock"],
+    "modules-right": ["pulseaudio", "backlight", "memory", "cpu","battery", "clock"],
     "sway/window": {
         "max-length": 50
     },
@@ -22,6 +22,30 @@
     "sway/mode": {
         "format": " {}",
         "max-length": 50
+    },
+    "pulseaudio": {
+        "format": "{volume}% {icon}",
+        "format-bluetooth": "{volume}% {icon}",
+        "format-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", ""]
+        }
+    },
+    "memory": {
+        "interval": 30,
+        "format": "{}% ",
+	"states": {
+	  "low": 0,
+	  "medium": 50,
+	  "high": 75
+	},
+        "max-length": 10
     },
     "battery": {
     	"interval": 5,
@@ -48,7 +72,11 @@
 	  "high": 60
 	},
         "max-length": 10
+    },
+    "backlight": {
+        "device": "intel_backlight",
+        "format": "{percent}% {icon}",
+        "format-icons": ["", ""]
     }
-
 }
 
