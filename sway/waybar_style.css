@@ -3,6 +3,10 @@
     background-color: #aaa;
 }
 
+window#waybar box{
+    border: none;
+}
+
 .modules-center label{
     color: white;
     font-size: 18;
