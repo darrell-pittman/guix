@@ -1,0 +1,54 @@
+{
+    "layer": "bottom",
+    "modules-left": ["sway/workspaces", "sway/mode"],
+    "modules-center": ["sway/window"],
+    "modules-right": ["cpu","battery", "clock"],
+    "sway/window": {
+        "max-length": 50
+    },
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": true,
+        "format": "{name} ◆ {icon}",
+        "format-icons": {
+            "1": "",
+            "2": "",
+            "3": "",
+            "urgent": "",
+            "focused": "",
+            "default": ""
+        }
+    },
+    "sway/mode": {
+        "format": " {}",
+        "max-length": 50
+    },
+    "battery": {
+    	"interval": 5,
+        "states": {
+            "good": 75,
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{capacity}% {icon}",
+        "format-charging": "{capacity}% ",
+        "format-plugged": "{capacity}% ",
+        "format-alt": "{time} {icon}",
+        "format-icons": ["", "", "", "", ""]
+    },
+    "clock": {
+        "format": "{:%F %I:%M %p}"
+    },
+    "cpu": {
+        "interval": 5,
+        "format": "{usage}% ",
+	"states": {
+	  "low": 0,
+	  "medium": 30,
+	  "high": 60
+	},
+        "max-length": 10
+    }
+
+}
+

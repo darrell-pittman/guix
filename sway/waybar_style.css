@@ -1,0 +1,67 @@
+* {
+    font-size: 15;
+    background-color: #aaa;
+}
+
+.modules-center label{
+    color: white;
+    font-size: 18;
+}
+
+#workspaces button {
+    margin: 7px 5px 0px 5px;
+    border-top: 3px solid #888;
+    border-right: 3px solid #888;
+    border-left: 3px solid #888;
+    border-bottom: none;
+    color: white;
+    padding: 0px 3px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+
+#workspaces button.focused {
+    background-color: white;
+    border-color: #eee;
+}
+
+#workspaces button label {
+    background-color: #aaa;
+    font-family: Fira Code Retina;
+}
+
+#workspaces button.focused label {
+    background-color: white;
+    color: black;
+}
+
+.modules-right label {
+    background-color: #eee;
+    margin: 2px 4px 2px 0;
+    padding: 1px 5px;
+    border-radius: 5px;
+    border: 1px solid #888;
+}
+
+#cpu {min-width: 60px;}
+#cpu.low {background-color: #eee;}
+#cpu.medium {background-color: yellow;}
+#cpu.high {background-color: red;}
+
+#battery { min-width: 75px;}
+#battery.good {background-color: #eee;}
+#battery.warning {background-color: yellow;}
+#battery.critical {background-color: red;}
+
+#mode {
+    background-color: lightpink;
+    border-left: 6px solid #888;
+    border-right: 6px solid #888;
+    padding: 0px 5px;
+    margin-left: 10px;
+    font-size: 18px;
+    color: darkviolet;
+}
