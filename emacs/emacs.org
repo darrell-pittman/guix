@@ -46,8 +46,8 @@ Note the :tangle no after the begin_src block : this means that this block will 
   (set-fringe-mode 10)
 
   ;; Favour vertical split
-  ;;(setq split-height-threshold nil)
-  ;;(setq split-width-threshold 80)
+  (setq split-height-threshold nil
+         split-width-threshold 80)
 
 #+end_src
 ** Line Numbers
