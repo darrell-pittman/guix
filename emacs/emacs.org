@@ -517,11 +517,11 @@ Note the :tangle no after the begin_src block : this means that this block will 
     :config
 
     (with-eval-after-load 'esh-opt
-      (setq eshell-destroy-buffer-when-process-dies t))
+      (setq eshell-destroy-buffer-when-process-dies t
+            eshell-highlight-prompt nil
+            eshell-prompt-function 'epe-theme-lambda))
     (with-eval-after-load 'em-term
-      (add-to-list 'eshell-visual-commands "vim"))
-
-    (eshell-git-prompt-use-theme 'powerline))
+      (add-to-list 'eshell-visual-commands "vi")))
 
 
   (wgc/leader
