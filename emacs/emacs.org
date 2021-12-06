@@ -167,38 +167,6 @@ Note the :tangle no after the begin_src block : this means that this block will 
     :custom (which-key-idle-delay 0.3))
 #+end_src
 * Completion Framework
-** Ivy/Counsel/Swiper
-#+begin_src emacs-lisp :tangle no
-  ;; No longer using ivy/counsel/swiper
-  (use-package ivy
-    :diminish ivy-mode
-    :bind (("C-s" . swiper)
-           :map ivy-minibuffer-map
-           ("<tab>" . ivy-alt-done)
-           ("C-l" . ivy-alt-done)
-           ("C-j" . ivy-next-line)
-           ("C-k" . ivy-previous-line)
-           :map ivy-switch-buffer-map
-           ("C-k" . ivy-previous-line)
-           ("C-l" . ivy-done)
-           ("C-d" . ivy-switch-buffer-kill)
-           :map ivy-reverse-i-search-map
-           ("C-k" . ivy-previous-line)
-           ("C-d" . ivy-reverse-i-search-kill))
-    :init
-    (ivy-mode))
-
-  (use-package counsel
-    :bind(([remap execute-extended-command] . counsel-M-x)
-          ([remap find-file] . counsel-find-file)
-          ([remap describe-bindings] . counsel-descbinds)
-          ("C-x b" . counsel-switch-buffer)
-          :map minibuffer-local-map
-          ("C-r" . counsel-minibuffer-history)))
-
-  (use-package ivy-rich
-    :init (ivy-rich-mode))
-#+end_src
 ** Savehist
 #+begin_src emacs-lisp
   (use-package savehist
@@ -256,6 +224,18 @@ Note the :tangle no after the begin_src block : this means that this block will 
     :custom
     (consult-project-root-function #'wgc/get-project-root)
     (completion-in-region-function #'consult-completion-in-region))
+
+#+end_src
+** Marginalia
+#+begin_src  emacs-lisp
+  (use-package marginalia
+    :after vertico
+    :custom
+    (marginalia-annotators '(marginalia-annotators-heavy
+                             marginalia-annotators-light
+                             nil))
+    :init
+    (marginalia-mode))
 
 #+end_src
 * Helpful

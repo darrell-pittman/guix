@@ -20,6 +20,7 @@
     "emacs-vertico"
     "emacs-orderless"
     "emacs-consult"
+    "emacs-marginalia"
     "emacs-helpful"
     "emacs-dired-hacks"
     "emacs-all-the-icons"
