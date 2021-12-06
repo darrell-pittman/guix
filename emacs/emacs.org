@@ -333,6 +333,8 @@ Note the :tangle no after the begin_src block : this means that this block will 
     (projectile-mode)
     (when (file-directory-p "~/projects")
       (setq projectile-project-search-path '("~/projects")))
+    :bind (:map projectile-command-map
+                ("s r" . consult-ripgrep))
     :config
     (wgc/leader
       "p" '(projectile-command-map :which-key "projectile")))
