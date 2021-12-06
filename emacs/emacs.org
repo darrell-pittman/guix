@@ -166,8 +166,10 @@ Note the :tangle no after the begin_src block : this means that this block will 
     :diminish which-key-mode
     :custom (which-key-idle-delay 0.3))
 #+end_src
-* Ivy/Counsel/Swiper/Helpful
-#+begin_src emacs-lisp
+* Completion Framework
+** Ivy/Counsel/Swiper
+#+begin_src emacs-lisp :tangle no
+  ;; No longer using ivy/counsel/swiper
   (use-package ivy
     :diminish ivy-mode
     :bind (("C-s" . swiper)
@@ -196,15 +198,74 @@ Note the :tangle no after the begin_src block : this means that this block will 
 
   (use-package ivy-rich
     :init (ivy-rich-mode))
+#+end_src
+** Savehist
+#+begin_src emacs-lisp
+  (use-package savehist
+    :config
+    (setq history-length 25)
+    (savehist-mode 1))
+  
+#+end_src
+** Vertico
+#+begin_src emacs-lisp
+  (defun wgc/minibuffer-backward-kill (arg)
+    "When minibuffer is completing a file name delete up to parent
+  folder, otherwise delete a word"
+    (interactive "p")
+    (if minibuffer-completing-file-name
+        ;; Borrowed from https://github.com/raxod502/selectrum/issues/498#issuecomment-803283608
+        (if (string-match-p "/." (minibuffer-contents))
+            (zap-up-to-char (- arg) ?/)
+          (delete-minibuffer-contents))
+      (backward-kill-word arg)))
 
-  (use-package helpful
+  (use-package vertico
+    :init (vertico-mode)
+    :bind (:map vertico-map
+                ("C-j" . vertico-next)
+                ("C-k" . vertico-previous)
+                ("C-f" . vertico-exit)
+                :map minibuffer-local-map
+                ("M-h" . wgc/minibuffer-backward-kill))
     :custom
-    (counsel-describe-function-function #'helpful-callable)
-    (counsel-describe-variable-function #'helpful-variable)
+    (vertico-cycle t))
+
+#+end_src
+** Orderless
+#+begin_src emacs-lisp
+  (use-package orderless
+    :init
+    (setq completion-styles '(orderless)
+          completion-category-defaults nil
+          completion-category-overrides '((file (styles . (partial-completion))))))
+
+#+end_src
+** Consult
+#+begin_src emacs-lisp
+  (defun wgc/get-project-root ()
+    (when (fboundp 'projectile-project-root)
+      (projectile-project-root)))
+
+  (use-package consult
+    :bind (("C-s" . consult-line)
+           ("C-M-l" . consult-imenu)
+           ("C-M-j" . persp-switch-to-buffer*)
+           :map minibuffer-local-map
+           ("C-r" . consult-history))
+    :custom
+    (consult-project-root-function #'wgc/get-project-root)
+    (completion-in-region-function #'consult-completion-in-region))
+
+#+end_src
+* Helpful
+#+begin_src emacs-lisp
+  (use-package helpful
     :bind
-    ([remap describe-function] . counsel-describe-function)
+    ([remap describe-function] . helpful-function)
+    ([remap describe-symbol] . helpful-symbol)
+    ([remap describe-variable] . helpful-variable)
     ([remap describe-command] . helpful-command)
-    ([remap describe-variable] . counsel-describe-variable)
     ([remap describe-key] . helpful-key))
 #+end_src
 * Evil Mode
@@ -272,16 +333,10 @@ Note the :tangle no after the begin_src block : this means that this block will 
     (projectile-mode)
     (when (file-directory-p "~/projects")
       (setq projectile-project-search-path '("~/projects")))
-    :custom
-    (projectile-switch-project-action #'projectile-dired)
     :config
     (wgc/leader
       "p" '(projectile-command-map :which-key "projectile")))
 
-
-  (use-package counsel-projectile
-    :init
-    (counsel-projectile-mode))
 #+end_src
 * Org Mode
 ** Setup Functions
