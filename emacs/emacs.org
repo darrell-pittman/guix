@@ -81,14 +81,14 @@ Note the :tangle no after the begin_src block : this means that this block will 
 #+end_src
 ** Theme
 #+begin_src emacs-lisp
-  (use-package gruvbox-theme
-    :config (load-theme 'gruvbox-dark-hard t))
+  ;; (use-package gruvbox-theme
+  ;;   :config (load-theme 'gruvbox-light-hard t))
 #+end_src
 ** Delimiters
 #+begin_src emacs-lisp
   (require 'paren)
   (set-face-background 'show-paren-match (face-background 'default))
-  (set-face-foreground 'show-paren-match "#ffff00")
+  (set-face-foreground 'show-paren-match "#ff00ff")
   (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
   (show-paren-mode)
   (use-package rainbow-delimiters
