@@ -16,7 +16,6 @@
     "emacs-evil-org"
     "emacs-key-chord"
     "emacs-company"
-    "emacs-company-box"
     "emacs-vertico"
     "emacs-orderless"
     "emacs-consult"
@@ -34,5 +33,4 @@
     "emacs-geiser-guile"
     "emacs-visual-fill-column"
     "emacs-flycheck-rust"
-    "emacs-rust-mode"
-    "emacs-gruvbox-theme"))
+    "emacs-rust-mode"))

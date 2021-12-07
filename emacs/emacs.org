@@ -81,6 +81,9 @@ Note the :tangle no after the begin_src block : this means that this block will 
 #+end_src
 ** Theme
 #+begin_src emacs-lisp
+  ;; (use-package airline-themes
+  ;;   :config (load-theme 'airline-laederon t))
+
   ;; (use-package gruvbox-theme
   ;;   :config (load-theme 'gruvbox-light-hard t))
 #+end_src
@@ -656,11 +659,6 @@ Note the :tangle no after the begin_src block : this means that this block will 
     (company-minimum-prefix-length 1)
     (company-idle-delay 0.0))
 
-  (use-package company-box
-    :custom
-    (company-box-doc-enable nil)
-    (company-box-icons-alist 'company-box-icons-all-the-icons)
-    :hook (company-mode . company-box-mode))
 #+end_src
 ** LSP Mode
 #+begin_src emacs-lisp
