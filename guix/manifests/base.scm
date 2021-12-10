@@ -36,4 +36,5 @@
         "font-abattis-cantarell"
         "font-fira-code"
         "alsa-utils"
+	"guile2.2-json"
         "light"))

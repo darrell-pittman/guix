@@ -9,7 +9,7 @@ window#waybar box{
 
 .modules-center label{
     color: white;
-    font-size: 18;
+    font-size: 18px;
 }
 
 #workspaces button {
@@ -45,7 +45,7 @@ window#waybar box{
 
 .modules-right label {
     background-color: #eee;
-    margin: 2px 4px 2px 0;
+    margin: 2px 4px 2px 0px;
     padding: 1px 5px;
     border-radius: 5px;
     border: 1px solid #888;
