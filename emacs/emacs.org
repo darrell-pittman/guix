@@ -131,8 +131,7 @@ Note the :tangle no after the begin_src block : this means that this block will 
       "t" '(:ignore t :which-key "toggles")
       "e" '(:ignore t :which-key "edits")
       "ec" '(:ignore t :which-key "comments")
-      "e SPC" 'set-mark-command
-      "SPC" 'universal-argument)
+      "SPC" 'set-mark-command)
     (general-def "<f5>" 'revert-buffer)
     (general-def "<escape>" 'keyboard-escape-quit))
 
