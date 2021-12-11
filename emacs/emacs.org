@@ -120,9 +120,7 @@ Note the :tangle no after the begin_src block : this means that this block will 
     :config
     (global-unset-key (kbd "C-SPC"))
     (general-create-definer wgc/leader
-      :states '(normal insert visual emacs)
-      :prefix "SPC"
-      :global-prefix "C-SPC")
+      :prefix "C-SPC")
     (wgc/leader
       "b" '(:ignore t :which-key "build")
       "o" '(:ignore t :which-key "org")
@@ -134,6 +132,7 @@ Note the :tangle no after the begin_src block : this means that this block will 
       "SPC" 'universal-argument)
     (general-def "<f5>" 'revert-buffer)
     (general-def "<escape>" 'keyboard-escape-quit))
+
 #+end_src
 * IBuffer
 #+begin_src emacs-lisp
@@ -251,50 +250,6 @@ Note the :tangle no after the begin_src block : this means that this block will 
     ([remap describe-command] . helpful-command)
     ([remap describe-key] . helpful-key))
 #+end_src
-* Evil Mode
-#+begin_src emacs-lisp
-  (use-package evil
-    :commands (evil-set-initial-state evil-collection-define-key)
-    :custom
-    (evil-want-integration t)
-    (evil-want-keybinding nil)
-    (evil-want-C-u-scroll t)
-    (evil-want-C-i-jump nil)
-    :config
-    (evil-mode 1)
-    (general-define-key
-     :keymaps 'evil-insert-state-map
-     "C-g" 'evil-normal-state
-     "C-h" 'evil-delete-backward-char-and-join)
-    (general-def 'motion
-      "j" 'evil-next-visual-line
-      "k" 'evil-previous-visual-line)
-    (evil-set-initial-state 'messages-buffer-mode 'normal)
-    (evil-set-initial-state 'dashboard-mode 'normal))
-
-  (use-package evil-collection
-    :after evil
-    :custom (evil-collection-company-use-tng nil)
-    :config
-    (evil-collection-init))
-
-  (defadvice evil-inner-word (around underscore-as-word activate)
-    (let ((table (copy-syntax-table (syntax-table))))
-      (modify-syntax-entry ?_ "w" table)
-      (with-syntax-table table
-        ad-do-it)))
-#+end_src
-* Key Chord
-#+begin_src emacs-lisp
-  (use-package key-chord
-    :after evil
-    :init (key-chord-mode 1)
-    :custom
-    (key-chord-two-keys-delay 0.2)
-    (key-chord-one-key-delay 0.3)
-    :config
-    (key-chord-define evil-insert-state-map "jk" 'evil-normal-state))
-#+end_src
 * Hydra
 #+begin_src emacs-lisp
   (use-package hydra)
@@ -385,15 +340,6 @@ Note the :tangle no after the begin_src block : this means that this block will 
     (org-load-modules-maybe t)
     (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp") t))
 #+end_src
-** Install Evil Org
-#+begin_src emacs-lisp
-  (use-package evil-org
-    :after org
-    :hook (org-mode . (lambda () evil-org-mode))
-    :config
-    (require 'evil-org-agenda)
-    (evil-org-agenda-set-keys))
-#+end_src
 ** Look and Feel
 #+begin_src emacs-lisp
   (defun wgc/open-org-file (file-name)
@@ -430,21 +376,18 @@ Note the :tangle no after the begin_src block : this means that this block will 
   (defun wgc/tangle-configs ()
     "Tangle org init files."
     (when (thread-last '("emacs.org" "emacs-private.org")
-            (mapcar (lambda (f) (expand-file-name f "~/config/emacs")))
-            (seq-some (apply-partially 'string= (buffer-file-name))))
+	    (mapcar (lambda (f) (expand-file-name f "~/config/emacs")))
+	    (seq-some (apply-partially 'string= (buffer-file-name))))
       (let ((org-confirm-babel-evaluate nil))
-        (org-babel-tangle))))
+	(org-babel-tangle))))
 
   (add-hook 'org-mode-hook
-            (lambda () (add-hook 'after-save-hook #'wgc/tangle-configs)))
+	    (lambda () (add-hook 'after-save-hook #'wgc/tangle-configs)))
 #+end_src
 * Paredit
 #+begin_src emacs-lisp
   (use-package paredit
     :commands (enable-paredit-mode))
-
-  (use-package evil-paredit
-    :commands (evil-paredit-mode))
 
   (dolist (mode '(emacs-lisp-mode-hook
                   eval-expression-minibuffer-setup-hook
@@ -452,8 +395,7 @@ Note the :tangle no after the begin_src block : this means that this block will 
                   lisp-mode-hook
                   lisp-interaction-mode-hook
                   scheme-mode-hook))
-    (add-hook mode #'enable-paredit-mode)
-    (add-hook mode #'evil-paredit-mode))
+    (add-hook mode #'enable-paredit-mode))
 #+end_src
 * Expand Region
 #+begin_src emacs-lisp
@@ -469,11 +411,7 @@ Note the :tangle no after the begin_src block : this means that this block will 
     :custom
     (dired-auto-revert-buffer t)
     (dired-listing-switches "-agho --group-directories-first")
-    :bind (("C-x C-j" . dired-jump))
-    :config
-    (evil-collection-define-key 'normal 'dired-mode-map
-      "h" 'dired-up-directory
-      "l" 'dired-find-file))
+    :bind (("C-x C-j" . dired-jump)))
 
   ;;(use-package dired-single)
 
@@ -490,9 +428,7 @@ Note the :tangle no after the begin_src block : this means that this block will 
 #+end_src
 * Erc
 #+begin_src emacs-lisp
-  (use-package erc
-    :config
-    (evil-set-initial-state 'erc-mode 'emacs))
+  (use-package erc)
 #+end_src
 * Recent Files
 #+begin_src  emacs-lisp
@@ -509,8 +445,7 @@ Note the :tangle no after the begin_src block : this means that this block will 
     :custom
     (explicit-shell-file-name "bash")
     :config
-    (setq term-prompt-regexp wgc/shell-prompt-pattern)
-    (evil-set-initial-state 'term-mode 'emacs))
+    (setq term-prompt-regexp wgc/shell-prompt-pattern))
 
   (use-package eterm-256color
     :hook (term-mode . eterm-256color-mode))
@@ -519,8 +454,7 @@ Note the :tangle no after the begin_src block : this means that this block will 
 #+begin_src emacs-lisp
   (use-package shell
     :config
-    (setq term-prompt-regexp wgc/shell-prompt-pattern)
-    (evil-set-initial-state 'shell-mode 'emacs))
+    (setq term-prompt-regexp wgc/shell-prompt-pattern))
 #+end_src
 ** EShell
 #+begin_src emacs-lisp
@@ -533,19 +467,6 @@ Note the :tangle no after the begin_src block : this means that this block will 
     ;; Truncate buffer for performance
     (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
 
-    (evil-define-key
-      '(normal insert visual)
-      eshell-mode-map
-      (kbd "C-r")
-      'counsel-esh-history)
-
-    (evil-define-key
-      '(normal insert visual)
-      eshell-mode-map
-      (kbd "<home>")
-      'eshell-bol)
-
-    (evil-normalize-keymaps)
     (setq eshell-history-size              10000
           eshell-buffer-maximum-lines      10000
           eshell-hist-ignoredups           t
@@ -571,36 +492,13 @@ Note the :tangle no after the begin_src block : this means that this block will 
 #+begin_src emacs-lisp
   (use-package vterm
     :custom
-    (vterm-max-scrollback 10000)
-    :config
-    (evil-set-initial-state 'vterm-mode 'emacs)
-    (wgc/leader
-      :keymaps 'vterm-mode-map
-      "ee" '(vterm-send-escape :which-key "vterm escape")))
+    (vterm-max-scrollback 10000))
 #+end_src
 ** IElm
 #+begin_src emacs-lisp
-  (use-package ielm
-    :ensure nil
-    :config
-    (evil-set-initial-state 'ielm-mode 'emacs))
+  (use-package ielm)
 #+end_src
 * Programming
-** Commenting
-#+begin_src emacs-lisp
-  (use-package evil-nerd-commenter
-    :config
-    (wgc/leader
-      :keymaps 'prog-mode-map
-      "ecc" '(evilnc-comment-or-uncomment-lines :which-key "lines")
-      "ecl" '(evilnc-quick-comment-or-uncomment-to-the-line
-              :which-key "quick to line")
-      "ecp" '(evilnc-comment-or-uncomment-paragraphs
-              :which-key "paragraph")
-      "ecr" '(comment-or-uncomment-region :which-key "region")
-      "ecv" '(evilnc-toggle-invert-comment-line-by-line
-              :which-key "line by line")))
-#+end_src
 ** Magit
 #+begin_src emacs-lisp
   (use-package magit
@@ -609,7 +507,6 @@ Note the :tangle no after the begin_src block : this means that this block will 
      #'magit-display-buffer-same-window-except-diff-v1)
     (magit-no-message '("Turning on magit-auto-revert-mode..."))
     :config
-    (evil-set-initial-state 'git-rebase-mode 'emacs)
     (setq magit-auto-revert-mode t))
 
   (general-def
