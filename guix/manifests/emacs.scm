@@ -10,6 +10,7 @@
     "emacs-org-contrib"
     "emacs-org-bullets"
     "emacs-company"
+    "emacs-company-box"
     "emacs-vertico"
     "emacs-orderless"
     "emacs-consult"
