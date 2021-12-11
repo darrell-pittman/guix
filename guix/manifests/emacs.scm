@@ -29,4 +29,5 @@
     "emacs-flycheck-rust"
     "emacs-expand-region"
     "emacs-paredit"
+    "emacs-modus-themes"
     "emacs-rust-mode"))

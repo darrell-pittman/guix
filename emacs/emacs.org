@@ -86,6 +86,9 @@ Note the :tangle no after the begin_src block : this means that this block will 
 
   ;; (use-package gruvbox-theme
   ;;   :config (load-theme 'gruvbox-light-hard t))
+
+  (use-package modus-themes
+    :config (load-theme 'modus-operandi t))
 #+end_src
 ** Delimiters
 #+begin_src emacs-lisp
