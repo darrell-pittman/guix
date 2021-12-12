@@ -22,14 +22,15 @@
 (define-module (gnucash report account-change))
 
 
-(use-modules (gnucash engine))
-(use-modules (gnucash utilities)) 
-(use-modules (gnucash core-utils))
-(use-modules (gnucash app-utils))
-(use-modules (gnucash report))
-(use-modules (gnucash html))
-(use-modules (gnucash gnc-module))
-(use-modules (gnucash gettext))
+(use-modules (gnucash engine)
+	     (gnucash utilities)
+	     (gnucash core-utils)
+	     (gnucash app-utils)
+	     (gnucash report)
+	     (gnucash html)
+	     (gnucash gnc-module)
+	     (gnucash gettext)
+	     (wgc report-utils))
 
 (debug-enable 'backtrace)
 
@@ -229,6 +230,9 @@
       (gnc:html-document-add-object!
        document
        (gnc:make-html-text         
+
+	(gnc:html-markup-p
+	 (wgc-test))
 	
 	(gnc:html-markup-p
          (gnc:html-markup/format

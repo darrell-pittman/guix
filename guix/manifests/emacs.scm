@@ -31,4 +31,5 @@
     "emacs-expand-region"
     "emacs-paredit"
     "emacs-modus-themes"
+    "emacs-ace-window"
     "emacs-rust-mode"))

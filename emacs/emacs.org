@@ -130,8 +130,12 @@ Note the :tangle no after the begin_src block : this means that this block will 
       "g" '(:ignore t :which-key "git")
       "t" '(:ignore t :which-key "toggles")
       "e" '(:ignore t :which-key "edits")
+      "C-SPC" 'set-mark-command)
+    (wgc/leader
+      :keymaps 'prog-mode-map
       "ec" '(:ignore t :which-key "comments")
-      "SPC" 'set-mark-command)
+      "ecr" 'comment-or-uncomment-region
+      "ecl" 'comment-line)
     (general-def "<f5>" 'revert-buffer)
     (general-def "<escape>" 'keyboard-escape-quit))
 
@@ -251,6 +255,13 @@ Note the :tangle no after the begin_src block : this means that this block will 
     ([remap describe-variable] . helpful-variable)
     ([remap describe-command] . helpful-command)
     ([remap describe-key] . helpful-key))
+#+end_src
+* Ace Window
+#+begin_src emacs-lisp
+  (use-package ace-window
+    :bind
+    ([remap other-window] . ace-window))
+
 #+end_src
 * Hydra
 #+begin_src emacs-lisp
@@ -549,17 +560,18 @@ Note the :tangle no after the begin_src block : this means that this block will 
     :bind
     (:map prog-mode-map
           ("<tab>" . company-indent-or-complete-common))
-    (:map company-active-map
-          ("C-j" . company-select-next)
-          ("C-k" . company-select-previous)
-          ("M-j" . company-select-next-or-abort)
-          ("M-k" . company-select-previous-or-abort))
+    ;; (:map company-active-map
+    ;;       ("C-j" . company-select-next)
+    ;;       ("C-k" . company-select-previous)
+    ;;       ("M-j" . company-select-next-or-abort)
+    ;;       ("M-k" . company-select-previous-or-abort))
     :custom
     (company-minimum-prefix-length 1)
     (company-idle-delay 0.0))
 
   (use-package company-box
     :custom
+    (company-box-show-numbers t)
     (company-box-doc-enable nil)
     (company-box-icons-alist 'company-box-icons-all-the-icons)
     :hook (company-mode . company-box-mode))
@@ -637,6 +649,32 @@ Note the :tangle no after the begin_src block : this means that this block will 
 #+end_src
 * Helper Functions
 #+begin_src emacs-lisp
+  (defun wgc/list-known-bindings (key)
+    (interactive "kList known bindings for key: ")
+    (with-current-buffer (get-buffer-create "*known bindings*")
+      (erase-buffer)
+      (mapatoms (lambda (sym)
+                  (when (or (eq sym 'global-map)
+                            (and (boundp sym)
+                                 (symbol-value sym)
+                                 (s-ends-with-p "-mode-map" (symbol-name sym))
+                                 (keymapp (symbol-value sym))))
+                    (let ((binding (lookup-key (symbol-value sym) key t)))
+                      (when (and binding
+                                 (not (numberp binding)))
+                        (insert (format "%-40s `%s'\n"
+                                        (format "`%s'" sym)
+                                        (if (keymapp binding)
+                                            "KEYMAP"
+                                          binding))))))))
+      (sort-lines nil (point-min) (point-max))
+      (goto-char (point-min))
+      (insert
+       (format "Known bindings for key: %s\n\n" (key-description key))
+       (format "%-40s %s" "Map" "Binding\n")
+       (s-repeat 40 "-") " " (s-repeat 30 "-") "\n") 
+      (display-buffer (current-buffer))))
+
   (defun wgc/load-if-exists (f)
     "load the elisp file only if it exists and is readable"
     (when (file-readable-p f)

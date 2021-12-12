@@ -37,4 +37,10 @@
         "font-fira-code"
         "alsa-utils"
 	"guile2.2-json"
+	"rust"
+	"rust-analyzer"
+	"rust-cargo"
+	"rust-pkg-config"
+        "pkg-config"
+	"alsa-lib"
         "light"))
