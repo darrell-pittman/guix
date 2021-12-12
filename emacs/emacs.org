@@ -136,8 +136,7 @@ Note the :tangle no after the begin_src block : this means that this block will 
       "ec" '(:ignore t :which-key "comments")
       "ecr" 'comment-or-uncomment-region
       "ecl" 'comment-line)
-    (general-def "<f5>" 'revert-buffer)
-    (general-def "<escape>" 'keyboard-escape-quit))
+    (general-def "<f5>" 'revert-buffer))
 
 #+end_src
 * IBuffer
@@ -151,7 +150,9 @@ Note the :tangle no after the begin_src block : this means that this block will 
                             (filename . "emacs-config")))
         ("Org" (or (mode . org-mode)
                    (filename . "org-mode")))
-        ("code" (filename . "darrell/projects"))
+        ("code" (or (filename . "darrell/projects")
+                    (and (derived-mode . prog-mode)
+                         (not (starred-name . "\*scratch\*")))))
         ("Web Dev" (or (mode . html-mode)
                        (mode . css-mode)))
         ("Magit" (name . "magit"))
@@ -198,11 +199,7 @@ Note the :tangle no after the begin_src block : this means that this block will 
 
   (use-package vertico
     :init (vertico-mode)
-    :bind (:map vertico-map
-                ("C-j" . vertico-next)
-                ("C-k" . vertico-previous)
-                ("C-f" . vertico-exit)
-                :map minibuffer-local-map
+    :bind (:map minibuffer-local-map
                 ("M-h" . wgc/minibuffer-backward-kill))
     :custom
     (vertico-cycle t))
