@@ -35,9 +35,6 @@
 
 (debug-enable 'backtrace)
 
-(gnc:module-load "gnucash/report/report-system" 0)
-(gnc:module-load "gnucash/html" 0) ;for gnc-build-url
-
 (define report-id "4b1586cb3f0b4f8b99dce3258dc23362")
 
 ;; Options
@@ -73,7 +70,7 @@
      (gnc:make-account-list-option
       gnc:pagename-display optname-account
       "g" (N_ "Report Account")
-      (lambda () (list (find-account (gnc:account-get-type-string-plural ACCT-TYPE-EXPENSE))))
+      (lambda () (list (wgc:find-account (gnc:account-get-type-string-plural ACCT-TYPE-EXPENSE))))
       #f #f))   
 
     (add-option
@@ -101,35 +98,6 @@
     options))
 
 
-(define visit-account
-  (lambda (root init visitor)
-    (call/cc
-     (lambda (k)
-       (let $visit-account ([root root] [init init])
-	 (let loop ([children (gnc-account-get-children root)]
-		    [acc (visitor root init k)])
-	   (if (null? children)
-	       acc
-	       (loop
-		(cdr children)
-		($visit-account (car children) acc)))))))))
-
-(define find-account
-  (case-lambda
-    [(needle) (find-account needle (gnc-get-current-root-account))]
-    [(needle root) (visit-account
-		    root
-		    #f
-		    (lambda (acct val k)
-		      (let ([name (gnc-account-get-full-name acct)])
-			(if (string= name needle)
-			    (k acct)
-			    #f))))]))
-
-(define get-account caar)
-(define account-children cdr)
-(define account-name xaccAccountGetName)
-
 (define (account-has-value? node)
   (not (zero? (wgc:account-value node))))
 
@@ -137,29 +105,6 @@
   (if show-zero-value-accounts
       nodes
       (filter account-has-value? nodes)))
-
-;; (define account-change
-;;   (lambda (root start-date end-date)
-
-;;     (define change
-;;       (lambda (acct)
-;; 	(- (xaccAccountGetBalanceAsOfDate acct end-date)
-;; 	   (xaccAccountGetBalanceAsOfDate acct start-date))))
-
-;;     (define loop-children
-;;       (lambda (parent children)
-;; 	(if (null? children)
-;; 	    '()
-;; 	    (let ([child (account-change (car children) start-date end-date)])
-;; 	      (set-cdr! parent (+ (cdr parent) (wgc:account-value child)))
-;; 	      (cons child (loop-children parent (cdr children)))))))
-
-;;     (define make-node
-;;       (lambda (acct)
-;; 	(let ([node (cons acct (change acct))])
-;; 	  (cons node (loop-children node (gnc-account-get-children-sorted acct))))))
-
-;;     (make-node root)))
 
 (define (account-change-renderer report-obj)
   (define (get-op section name)
@@ -210,16 +155,16 @@
 		  (lambda (node)
 		    (let ([value (wgc:account-value node)]
 			  [children (filter-accounts
-				     (account-children node)
+				     (wgc:account-children node)
 				     show-zero-value-accounts)])
 		      (if (null? children)
 			  (gnc:html-markup/format
 			   (G_ "~a : ~a")
-			   (account-name (get-account node))
+			   (wgc:account-name (wgc:get-account node))
 			   (gnc:html-markup-b value))
 			  (gnc:html-markup/format
 			   (G_ "~a : ~a ~a")
-			   (account-name (get-account node))
+			   (wgc:account-name (wgc:get-account node))
 			   (gnc:html-markup-b value)
 			   (account-ul children (+ depth 1))))))
 		  nodes))
@@ -230,14 +175,11 @@
       (gnc:html-document-add-object!
        document
        (gnc:make-html-text         
-
-	(gnc:html-markup-p
-	 (wgc:test-function))
 	
 	(gnc:html-markup-p
          (gnc:html-markup/format
           (G_ "Account: ~a") 
-          (gnc:html-markup-b (account-name root-account))))
+          (gnc:html-markup-b (wgc:account-name root-account))))
 
         (gnc:html-markup-p
          (gnc:html-markup/format
