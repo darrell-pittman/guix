@@ -560,11 +560,6 @@ Note the :tangle no after the begin_src block : this means that this block will 
     :bind
     (:map prog-mode-map
           ("<tab>" . company-indent-or-complete-common))
-    ;; (:map company-active-map
-    ;;       ("C-j" . company-select-next)
-    ;;       ("C-k" . company-select-previous)
-    ;;       ("M-j" . company-select-next-or-abort)
-    ;;       ("M-k" . company-select-previous-or-abort))
     :custom
     (company-minimum-prefix-length 1)
     (company-idle-delay 0.0))
