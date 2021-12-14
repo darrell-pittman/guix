@@ -18,18 +18,17 @@
 (define account-children cdr)
 (define account-name xaccAccountGetName)
 
-(define visit-account
-  (lambda (root init visitor)
-    (call/cc
-     (lambda (k)
-       (let $visit-account ([root root] [init init])
-	 (let loop ([children (gnc-account-get-children root)]
-		    [acc (visitor root init k)])
-	   (if (null? children)
-	       acc
-	       (loop
-		(cdr children)
-		($visit-account (car children) acc)))))))))
+(define (visit-account root init visitor)
+  (call/cc
+   (lambda (k)
+     (let $visit-account ([root root] [init init])
+       (let loop ([children (gnc-account-get-children root)]
+		  [acc (visitor root init k)])
+	 (if (null? children)
+	     acc
+	     (loop
+	      (cdr children)
+	      ($visit-account (car children) acc))))))))
 
 (define find-account
   (case-lambda
@@ -43,26 +42,24 @@
 			    (k acct)
 			    #f))))]))
 
+(define (account-change root start-date end-date)
 
-(define account-change
-  (lambda (root start-date end-date)
+  (define change
+    (lambda (acct)
+      (- (xaccAccountGetBalanceAsOfDate acct end-date)
+	 (xaccAccountGetBalanceAsOfDate acct start-date))))
 
-    (define change
-      (lambda (acct)
-	(- (xaccAccountGetBalanceAsOfDate acct end-date)
-	   (xaccAccountGetBalanceAsOfDate acct start-date))))
+  (define loop-children
+    (lambda (parent children)
+      (if (null? children)
+	  '()
+	  (let ([child (account-change (car children) start-date end-date)])
+	    (set-cdr! parent (+ (cdr parent) (account-value child)))
+	    (cons child (loop-children parent (cdr children)))))))
 
-    (define loop-children
-      (lambda (parent children)
-	(if (null? children)
-	    '()
-	    (let ([child (account-change (car children) start-date end-date)])
-	      (set-cdr! parent (+ (cdr parent) (account-value child)))
-	      (cons child (loop-children parent (cdr children)))))))
+  (define make-node
+    (lambda (acct)
+      (let ([node (cons acct (change acct))])
+	(cons node (loop-children node (gnc-account-get-children-sorted acct))))))
 
-    (define make-node
-      (lambda (acct)
-	(let ([node (cons acct (change acct))])
-	  (cons node (loop-children node (gnc-account-get-children-sorted acct))))))
-
-    (make-node root)))
+  (make-node root))
