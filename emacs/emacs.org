@@ -698,4 +698,8 @@ Note the :tangle no after the begin_src block : this means that this block will 
    (expand-file-name "emacs-private.el" user-emacs-directory))
 
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+  (defun wgc/format-currancy (num)
+    (format "%.2f" num))
+
 #+end_src
