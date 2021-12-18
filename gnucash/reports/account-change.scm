@@ -1,26 +1,4 @@
-;; -*-scheme-*-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the GNU General Public License as
-;; published by the Free Software Foundation; either version 2 of
-;; the License, or (at your option) any later version.
-;;
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-;;
-;; You should have received a copy of the GNU General Public License
-;; along with this program; if not, contact:
-;;
-;; Free Software Foundation           Voice:  +1-617-542-5942
-;; 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
-;; Boston, MA  02110-1301,  USA       gnu@gnu.org
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
 (define-module (gnucash report account-change))
-
 
 (use-modules (gnucash engine)
 	     (gnucash utilities)
@@ -70,7 +48,10 @@
      (gnc:make-account-list-option
       gnc:pagename-display optname-account
       "g" (N_ "Report Account")
-      (lambda () (list (wgc:find-account (gnc:account-get-type-string-plural ACCT-TYPE-EXPENSE))))
+      (lambda ()
+	(list
+	 (wgc:find-account
+	  (gnc:account-get-type-string-plural ACCT-TYPE-EXPENSE))))
       #f #f))   
 
     (add-option
@@ -106,6 +87,13 @@
       nodes
       (filter account-has-value? nodes)))
 
+(define (format-extent extent)
+  (let ([begin
+	  (strftime "%x" (gnc-localtime (wgc:extent-begin extent)))]
+	[end
+	 (strftime "%x" (gnc-localtime (wgc:extent-end extent)))])
+    (format #f "~a -> ~a" begin end)))
+
 (define (account-change-renderer report-obj)
   (define (get-op section name)
     (gnc:lookup-option (gnc:report-options report-obj) section name))
@@ -117,10 +105,10 @@
 	 (gnc:date-option-absolute-time
 	  (op-value gnc:pagename-display optname-start-date)))
 	(end-date-val
-	 (gnc:time64-end-day-time
-	  (gnc:date-option-absolute-time
-	   (op-value gnc:pagename-display optname-end-date))))
-	(root-account (car (op-value gnc:pagename-display optname-account)))
+	 (gnc:date-option-absolute-time
+	  (op-value gnc:pagename-display optname-end-date)))
+	(root-account
+	 (car (op-value gnc:pagename-display optname-account)))
 	(show-zero-value-accounts
 	 (op-value gnc:pagename-display optname-show-zero-values))
 	(max-depth (op-value gnc:pagename-display optname-max-depth))
@@ -132,21 +120,20 @@
      document "body" 
      'attribute (list "style" "padding: 5px 40px"))
 
-    (let* ((check-date-val
-	    (gnc:time64-end-day-time
-	     (gnc:time64-previous-day start-date-val)))
-	   (report-time-string (strftime "%X" (gnc-localtime (current-time))))
-	   (report-date-string (strftime "%x" (gnc-localtime (current-time))))
-           (start-date-string (strftime "%x" (gnc-localtime start-date-val)))
-	   (end-date-string (strftime "%x" (gnc-localtime end-date-val)))
-	   (check-date-val-prev (decdate check-date-val YearDelta))
-	   (end-date-val-prev (decdate end-date-val YearDelta)))
+    (let* ((report-time-string
+	    (strftime "%X" (gnc-localtime (current-time))))
+	   (report-date-string
+	    (strftime "%x" (gnc-localtime (current-time))))
+	   (current-extent
+	    (wgc:make-extent start-date-val end-date-val))
+	   (previous-extent
+	    (wgc:slide-extent current-extent - YearDelta)))
 
       (define account-change-ul
-	(lambda (check-date end-date)
-	  (let account-ul ([nodes (list (wgc:account-change root-account
-							check-date
-							end-date))]
+	(lambda (extent)
+	  (let account-ul ([nodes (list (wgc:account-change
+					 root-account
+					 extent))]
 			   [depth 0])
 	    (if (or (= max-depth 0)
 		    (< depth max-depth))
@@ -175,7 +162,7 @@
       (gnc:html-document-add-object!
        document
        (gnc:make-html-text         
-	
+
 	(gnc:html-markup-p
          (gnc:html-markup/format
           (G_ "Account: ~a") 
@@ -185,36 +172,62 @@
          (gnc:html-markup/format
           (G_ "Report Time: ~a") 
           (gnc:html-markup-b
-	   (string-append report-date-string " " report-time-string))))
-
-        (gnc:html-markup-p
-         (gnc:html-markup/format
-          (G_ "Start Date: ~a") 
-          (gnc:html-markup-b start-date-string)))
-
-	(gnc:html-markup-p
-         (gnc:html-markup/format
-          (G_ "End Date: ~a") 
-          (gnc:html-markup-b end-date-string)))))
+	   (string-append report-date-string " " report-time-string))))))
 
 
       (let ((table (gnc:make-html-table)))
-	(gnc:html-table-append-row! table (list
-					   (gnc:make-html-table-header-cell (gnc:make-html-text (gnc:html-markup-b "Current")))
-					   (gnc:make-html-table-header-cell (gnc:make-html-text (gnc:html-markup-b "Previous")))))
-	(gnc:html-table-append-row! table
-				    (list
-				     (gnc:make-html-text
-				      (account-change-ul check-date-val end-date-val))
-				     (gnc:make-html-text
-				      (account-change-ul check-date-val-prev end-date-val-prev))))
+	(gnc:html-table-append-row!
+	 table
+	 (list
+	  (gnc:make-html-table-header-cell
+	   (gnc:make-html-text (gnc:html-markup-b "Current")))
+	  (gnc:make-html-table-header-cell
+	   (gnc:make-html-text (gnc:html-markup-b "Previous")))))
 
-	(gnc:html-table-set-style! table "th"
-				   'attribute (list "style" "border-right: 1px solid black;text-align:center; padding: 5px 20px"))
-	(gnc:html-table-set-style! table "td"
-				   'attribute (list "style" "border-right: 1px solid black;padding: 5px 20px"))
-	(gnc:html-table-set-style! table "table"
-				   'attribute (list "style" "border-top: 1px solid black; border-bottom: 1px solid black; border-left: 1px solid black"))
+	(gnc:html-table-append-row!
+	 table
+	 (list
+	  (gnc:make-html-table-header-cell
+	   (format-extent current-extent))
+	  (gnc:make-html-table-header-cell
+	   (format-extent previous-extent))))
+	
+	(gnc:html-table-append-row!
+	 table
+	 (list
+	  (gnc:make-html-text
+	   (account-change-ul current-extent))
+	  (gnc:make-html-text
+	   (account-change-ul previous-extent))))
+	
+	(gnc:html-table-set-style!
+	 table
+	 "th"
+	 'attribute
+	 (list "style"
+	       (string-append
+		"border-right: 1px solid black;"
+		"text-align:center;"
+		"padding: 5px 20px")))
+	(gnc:html-table-set-style!
+	 table
+	 "td"
+	 'attribute
+	 (list
+	  "style"
+	  (string-append
+	   "border-right: 1px solid black;"
+	   "padding: 5px 20px")))
+	(gnc:html-table-set-style!
+	 table
+	 "table"
+	 'attribute
+	 (list
+	  "style"
+	  (string-append
+	   "border-top: 1px solid black;"
+	   "border-bottom: 1px solid black;"
+	   "border-left: 1px solid black")))
         (gnc:html-document-add-object! document table))
 
       document)))
