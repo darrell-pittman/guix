@@ -120,10 +120,8 @@
      document "body" 
      'attribute (list "style" "padding: 5px 40px"))
 
-    (let* ((report-time-string
-	    (strftime "%X" (gnc-localtime (current-time))))
-	   (report-date-string
-	    (strftime "%x" (gnc-localtime (current-time))))
+    (let* ((report-date-string
+	    (strftime "%x %X" (gnc-localtime (current-time))))
 	   (current-extent
 	    (wgc:make-extent start-date-val end-date-val))
 	   (previous-extent
@@ -171,8 +169,7 @@
         (gnc:html-markup-p
          (gnc:html-markup/format
           (G_ "Report Time: ~a") 
-          (gnc:html-markup-b
-	   (string-append report-date-string " " report-time-string))))))
+          (gnc:html-markup-b report-date-string)))))
 
 
       (let ((table (gnc:make-html-table)))
