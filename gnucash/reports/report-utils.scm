@@ -76,24 +76,21 @@
 	 [start-date (extent-begin adjusted)]
 	 [end-date (extent-end adjusted)])
 
-    (define change
-      (lambda (acct)
-	(- (xaccAccountGetBalanceAsOfDate acct end-date)
-	   (xaccAccountGetBalanceAsOfDate acct start-date))))
+    (define (change acct)
+      (- (xaccAccountGetBalanceAsOfDate acct end-date)
+	 (xaccAccountGetBalanceAsOfDate acct start-date)))
 
-    (define loop-children
-      (lambda (parent children)
-	(if (null? children)
-	    '()
-	    (let ([child (make-node (car children))])
-	      (set-cdr! parent (+ (cdr parent) (account-value child)))
-	      (cons child (loop-children parent (cdr children)))))))
+    (define (loop-children parent children)
+      (if (null? children)
+	  '()
+	  (let ([child (make-node (car children))])
+	    (set-cdr! parent (+ (cdr parent) (account-value child)))
+	    (cons child (loop-children parent (cdr children))))))
 
-    (define make-node
-      (lambda (acct)
-	(let ([node (cons acct (change acct))])
-	  (cons node (loop-children
-		      node
-		      (gnc-account-get-children-sorted acct))))))
+    (define (make-node acct)
+      (let ([node (cons acct (change acct))])
+	(cons node (loop-children
+		    node
+		    (gnc-account-get-children-sorted acct)))))
 
     (make-node root)))
