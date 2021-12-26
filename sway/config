@@ -16,6 +16,9 @@ set $term alacritty
 # on the original workspace that the command was run on.
 set $menu dmenu_path | dmenu | xargs swaymsg exec --
 
+# Browser setup
+set $browser firefox
+
 ### Output configuration
 #
 output * bg /home/darrell/config/sway/Sway_Wallpaper_Blue_1920x1080.png fill
@@ -140,7 +143,7 @@ input type:keyboard {
 
 
     # App Assignments
-    assign [app_id="chromium-browser"] workspace number 1
+    assign [app_id="firefox"] workspace number 1
     assign [class="Emacs"] workspace number 2
     assign [app_id="Alacritty"] workspace number 3
 #
@@ -249,13 +252,13 @@ bindsym $mod+Shift+Delete exec swaylock -f -c 000000
 exec shepherd
 
 # Apps
-bindsym $mod+bracketright exec chromium
+bindsym $mod+bracketright exec $browser
 
 # Font
 font pango:Fira Code Retina 12
 
 # Start Up
-exec nohup chromium &>/dev/null &
+exec nohup $browser &>/dev/null &
 exec nohup emacs &>/dev/null &
 exec $term &
 exec swaymsg [workspace="1"] focus
