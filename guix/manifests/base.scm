@@ -39,6 +39,7 @@
 	"guile2.2-json"
 	"rust"
 	"rust-cargo"
+;;	"rust-analyzer"
 	"rust-pkg-config"
         "pkg-config"
 	"alsa-lib"

@@ -32,4 +32,5 @@
     "emacs-paredit"
     "emacs-modus-themes"
     "emacs-ace-window"
+    "emacs-avy"
     "emacs-rust-mode"))
