@@ -262,7 +262,7 @@ Note the :tangle no after the begin_src block : this means that this block will 
 #+begin_src  emacs-lisp
   (use-package avy)
   (wgc/leader
-    "s" 'avy-goto-char)
+    "s" '(avy-goto-char :which-key "goto char"))
 #+end_src
 * Hydra
 #+begin_src emacs-lisp
