@@ -154,10 +154,20 @@
 				      (handle-lid-switch-external-power 'suspend)))
                     (service wpa-supplicant-service-type 
                              (wpa-supplicant-configuration
-                              (config-file (local-file "wpa-supplicant.conf"))
+                              (config-file (local-file "./wpa-supplicant.conf"))
                               (interface "wlp1s0")))
                     )
-                   %base-services))
+                   (modify-services
+                    %base-services
+                    (guix-service-type
+                     config => (guix-configuration
+                                (inherit config)
+                                (substitute-urls
+                                 (append (list "https://substitutes.nonguix.org")
+                                         %default-substitute-urls))
+                                (authorized-keys
+                                 (append (list (local-file "./signing-key.pub"))
+                                         %default-authorized-guix-keys)))))))
 
  (setuid-programs
   (cons* 
@@ -166,5 +176,12 @@
      (file-append 
       (specification->package "swaylock") 
       "/bin/swaylock")))
-   %setuid-programs))) 
+   %setuid-programs)))
+
+
+
+
+
+
+
 
