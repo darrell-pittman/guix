@@ -557,6 +557,7 @@ Note the :tangle no after the begin_src block : this means that this block will 
     "gF" 'magit-fetch-all
     "gr" 'magit-rebase
     "gm" 'magit-merge
+    "gS" 'magit-stash
     "gv" 'vc-refresh-state)
 #+end_src
 ** Flycheck
