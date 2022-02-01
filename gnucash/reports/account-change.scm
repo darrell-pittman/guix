@@ -1,15 +1,14 @@
-(define-module (gnucash report account-change))
-
-(use-modules (gnucash engine)
-	     (gnucash utilities)
-	     (gnucash core-utils)
-	     (gnucash app-utils)
-	     (gnucash report)
-	     (gnucash html)
-	     (gnucash gnc-module)
-	     (gnucash gettext)
-	     ((wgc report-utils)
-	      #:prefix wgc:))
+(define-module (wgc report account-change)
+  #:use-module (gnucash engine)
+  #:use-module (gnucash utilities) 
+  #:use-module (gnucash core-utils)
+  #:use-module (gnucash app-utils) 
+  #:use-module (gnucash report)    
+  #:use-module (gnucash html)      
+  #:use-module (gnucash gnc-module)
+  #:use-module (gnucash gettext)
+  #:use-module ((wgc report utils)
+                #:prefix wgc:))
 
 (debug-enable 'backtrace)
 
@@ -80,19 +79,12 @@
 
 
 (define (account-has-value? node)
-  (not (zero? (wgc:account-value node))))
+  (not (zero? (wgc:account-node-change node))))
 
 (define (filter-accounts nodes show-zero-value-accounts)
   (if show-zero-value-accounts
       nodes
       (filter account-has-value? nodes)))
-
-(define (format-extent extent)
-  (let ([begin
-	  (strftime "%x" (gnc-localtime (wgc:extent-begin extent)))]
-	[end
-	 (strftime "%x" (gnc-localtime (wgc:extent-end extent)))])
-    (format #f "~a -> ~a" begin end)))
 
 (define (account-change-renderer report-obj)
   (define (get-op section name)
@@ -129,27 +121,30 @@
 
       (define account-change-ul
 	(lambda (extent)
-	  (let account-ul ([nodes (list (wgc:account-change
-					 root-account
-					 extent))]
+	  (let account-ul ([nodes (list (wgc:account-change-rec-node
+                                         (wgc:account-change
+				              root-account
+				              extent)))]
 			   [depth 0])
 	    (if (or (= max-depth 0)
 		    (< depth max-depth))
 		(gnc:html-markup-ul
 		 (map
 		  (lambda (node)
-		    (let ([value (wgc:account-value node)]
+		    (let ([value (wgc:account-node-change node)]
 			  [children (filter-accounts
-				     (wgc:account-children node)
+				     (wgc:account-node-children node)
 				     show-zero-value-accounts)])
 		      (if (null? children)
 			  (gnc:html-markup/format
 			   (G_ "~a : ~a")
-			   (wgc:account-name (wgc:get-account node))
+			   (wgc:account-name
+                            (wgc:account-node-acct node))
 			   (gnc:html-markup-b value))
 			  (gnc:html-markup/format
 			   (G_ "~a : ~a ~a")
-			   (wgc:account-name (wgc:get-account node))
+			   (wgc:account-name
+                            (wgc:account-node-acct node))
 			   (gnc:html-markup-b value)
 			   (account-ul children (+ depth 1))))))
 		  nodes))
@@ -159,7 +154,18 @@
       
       (gnc:html-document-add-object!
        document
-       (gnc:make-html-text         
+       (gnc:make-html-text
+
+        ;; (gnc:html-markup-p
+        ;;  (gnc:html-markup/format
+        ;;   (G_ "Extents: ~a")
+        ;;   (map (lambda (val)
+        ;;          (format #f "Ext: ~a, Val: ~1,2f"
+        ;;                  (wgc:format-extent (car val))
+        ;;                  (cdr val)))
+        ;;        (wgc:account-change-over-time
+        ;;         (wgc:find-account "Expenses:Groceries")
+        ;;         (wgc:prev-year-weekly-extents)))))
 
 	(gnc:html-markup-p
          (gnc:html-markup/format
@@ -185,9 +191,9 @@
 	 table
 	 (list
 	  (gnc:make-html-table-header-cell
-	   (format-extent current-extent))
+	   (wgc:format-extent current-extent))
 	  (gnc:make-html-table-header-cell
-	   (format-extent previous-extent))))
+	   (wgc:format-extent previous-extent))))
 	
 	(gnc:html-table-append-row!
 	 table

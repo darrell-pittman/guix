@@ -1,27 +1,32 @@
-(define-module (wgc report-utils)
+(define-module (wgc report utils)
   #:use-module (gnucash engine)
   #:use-module (gnucash utilities)
   #:use-module (gnucash app-utils)
   #:use-module (gnucash gnc-module)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-1)
   #:export (account-change
-	    account-value
-	    get-account
+            account-change-rec-extent
+            account-change-rec-node
+            account-node-acct
+            account-node-change
+            account-node-children
 	    account-name
-	    account-children
 	    visit-account
 	    find-account
 	    make-extent
 	    slide-extent
 	    extent-begin
-	    extent-end))
+	    extent-end
+            prev-year-extents
+            format-extent
+            account-change-over-time
+            extent-collection-delta
+            extent-collection-extents))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 (gnc:module-load "gnucash/html" 0) ;for gnc-build-url
 
-(define account-value cdar)
-(define get-account caar)
-(define account-children cdr)
 (define account-name xaccAccountGetName)
 
 (define-record-type <extent>
@@ -29,6 +34,25 @@
   extent?
   (begin extent-begin)
   (end extent-end))
+
+(define-record-type <extent-collection>
+  (make-extent-collection delta extents)
+  extent-collection?
+  (delta extent-collection-delta)
+  (extents extent-collection-extents))
+
+(define-record-type <account-node>
+  (make-account-node acct change children)
+  account-node?
+  (acct account-node-acct)
+  (change account-node-change)
+  (children account-node-children))
+
+(define-record-type <account-change-rec>
+  (make-account-change-rec extent node)
+  account-change-node?
+  (extent account-change-rec-extent)
+  (node account-change-rec-node))
 
 (define (date-mode-method op)
   (cond
@@ -80,17 +104,71 @@
       (- (xaccAccountGetBalanceAsOfDate acct end-date)
 	 (xaccAccountGetBalanceAsOfDate acct start-date)))
 
-    (define (loop-children parent children)
+    (define (loop-children children)
       (if (null? children)
 	  '()
 	  (let ([child (make-node (car children))])
-	    (set-cdr! parent (+ (cdr parent) (account-value child)))
-	    (cons child (loop-children parent (cdr children))))))
+	    (cons child (loop-children (cdr children))))))
 
     (define (make-node acct)
-      (let ([node (cons acct (change acct))])
-	(cons node (loop-children
-		    node
-		    (gnc-account-get-children-sorted acct)))))
+      (let ([children (loop-children
+                       (gnc-account-get-children-sorted acct))])
+        (make-account-node
+         acct
+         (+ (change acct)
+            (fold (lambda (child amt)
+                    (+ amt (account-node-change child)))
+                  0
+                  children))
+         children)))
 
-    (make-node root)))
+    (make-account-change-rec adjusted (make-node root))))
+
+(define (make-extents start-date number delta)
+  (if (zero? number)
+      '()
+      (let ([next-start-date (incdate start-date delta)])
+        (cons (make-extent start-date
+                           (decdate next-start-date DayDelta))
+              (make-extents next-start-date
+                            (1- number)
+                            delta)))))
+
+(define (extent->account-value acct)
+  (lambda (extent)
+    (account-node-change
+     (account-change-rec-node
+      (account-change acct extent)))))
+
+(define (extent-value acct)
+  (let ([value-fn (extent->account-value acct)])
+    (lambda (extent)
+      (cons extent (value-fn extent)))))
+
+(define (account-change-over-time acct extent-coll)
+  (map (extent-value acct)
+       (extent-collection-extents extent-coll)))
+
+(define (prev-year-start-date)
+  (decdate (gnc:get-start-next-month) YearDelta))
+
+(define (delta->num-extents delta)
+  (case delta
+    ((MonthDelta) 12)
+    ((WeekDelta) 52)
+    (else (raise-exception 'invalid-delta))))
+
+(define (prev-year-extents delta)
+  (make-extent-collection
+   delta
+   (make-extents
+    (prev-year-start-date)
+    (delta->num-extents delta)
+    (eval delta (interaction-environment)))))
+
+(define (format-extent extent)
+  (let ([begin
+	  (strftime "%x" (gnc-localtime (extent-begin extent)))]
+	[end
+	 (strftime "%x" (gnc-localtime (extent-end extent)))])
+    (format #f "~a -> ~a" begin end)))
