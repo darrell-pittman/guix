@@ -25,8 +25,8 @@
             extent-collection-extents
             extent-change-extent
             extent-change-change
-            account-trend-data-labels
-            account-trend-values))
+            account-trend-get-data-labels
+            account-trend-get-values))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 (gnc:module-load "gnucash/html" 0) ;for gnc-build-url
@@ -211,7 +211,7 @@
     [(12) "Dec"]
     [else (raise-exception 'invalid-month)]))
 
-(define (account-trend-data-labels acct-trend)
+(define (account-trend-get-data-labels acct-trend)
   (let ([converter
          (case (account-trend-delta acct-trend)
            [(MonthDelta) (lambda (start)
@@ -229,7 +229,7 @@
              (converter start)))
          (account-trend-vals acct-trend))))
 
-(define (account-trend-values acct-trend)
+(define (account-trend-get-values acct-trend)
   (map (lambda (extent-change)
          (extent-change-change extent-change))
        (account-trend-vals acct-trend)))

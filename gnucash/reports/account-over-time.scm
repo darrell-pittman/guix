@@ -21,27 +21,38 @@
     options))
 
 (define (account-over-time-renderer report-obj)
-  (let ([document (gnc:make-html-document)]
-        [chart (gnc:make-html-chart)])
+  (let* ([document (gnc:make-html-document)]
+         [chart (gnc:make-html-chart)]
+         [acct (wgc:find-account "Expenses:Groceries")]
+         [curr (xaccAccountGetCommodity acct)])
 
     (gnc:html-chart-set-title! chart "Accounts Over Time")
     (gnc:html-chart-set-type! chart 'line)
     (gnc:html-chart-set-width! chart '(pixels . 800))
     (gnc:html-chart-set-height! chart '(pixels . 600))
-    (gnc:html-chart-set-y-axis-label! chart "Dollars")
 
-    (let ([trend (wgc:account-trend
-                  (wgc:find-account "Expenses:Groceries")
-                  (wgc:prev-year-extents 'MonthDelta))])
+    (gnc:html-chart-set-currency-iso!
+     chart
+     (gnc-commodity-get-mnemonic curr))
+
+    (gnc:html-chart-set-currency-symbol!
+     chart
+     (gnc-commodity-get-nice-symbol curr))
+
+    (gnc:html-chart-set-y-axis-label! chart "Amount")
+
+    (let* ([trend (wgc:account-trend
+                   acct
+                   (wgc:prev-year-extents 'MonthDelta))])
       
       (gnc:html-chart-set-data-labels!
        chart
-       (wgc:account-trend-data-labels trend))
+       (wgc:account-trend-get-data-labels trend))
       
       (gnc:html-chart-add-data-series!
        chart
        "Expenses:Groceries"
-       (wgc:account-trend-values trend)
+       (wgc:account-trend-get-values trend)
        (gnc:assign-colors 3)
        'border-width 1
        'fill #f))
