@@ -20,9 +20,13 @@
 	    extent-end
             prev-year-extents
             format-extent
-            account-change-over-time
+            account-trend
             extent-collection-delta
-            extent-collection-extents))
+            extent-collection-extents
+            extent-change-extent
+            extent-change-change
+            account-trend-data-labels
+            account-trend-values))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 (gnc:module-load "gnucash/html" 0) ;for gnc-build-url
@@ -40,6 +44,19 @@
   extent-collection?
   (delta extent-collection-delta)
   (extents extent-collection-extents))
+
+(define-record-type <extent-change>
+  (make-extent-change extent change)
+  extent-change?
+  (extent extent-change-extent)
+  (change extent-change-change))
+
+(define-record-type <account-trend>
+  (make-account-trend acct delta vals)
+  account-trend?
+  (acct account-trend-acct)
+  (delta account-trend-delta)
+  (vals account-trend-vals))
 
 (define-record-type <account-node>
   (make-account-node acct change children)
@@ -143,11 +160,16 @@
 (define (extent-value acct)
   (let ([value-fn (extent->account-value acct)])
     (lambda (extent)
-      (cons extent (value-fn extent)))))
+      (make-extent-change
+       extent
+       (value-fn extent)))))
 
-(define (account-change-over-time acct extent-coll)
-  (map (extent-value acct)
-       (extent-collection-extents extent-coll)))
+(define (account-trend acct extent-coll)
+  (make-account-trend
+   acct
+   (extent-collection-delta extent-coll)
+   (map (extent-value acct)
+        (extent-collection-extents extent-coll))))
 
 (define (prev-year-start-date)
   (decdate (gnc:get-start-next-month) YearDelta))
@@ -172,3 +194,42 @@
 	[end
 	 (strftime "%x" (gnc-localtime (extent-end extent)))])
     (format #f "~a -> ~a" begin end)))
+
+(define (month->string month)
+  (case month
+    [(1) "Jan"]
+    [(2) "Feb"]
+    [(3) "Mar"]
+    [(4) "Apr"]
+    [(5) "May"]
+    [(6) "Jun"]
+    [(7) "Jul"]
+    [(8) "Aug"]
+    [(9) "Sep"]
+    [(10) "Oct"]
+    [(11) "Nov"]
+    [(12) "Dec"]
+    [else (raise-exception 'invalid-month)]))
+
+(define (account-trend-data-labels acct-trend)
+  (let ([converter
+         (case (account-trend-delta acct-trend)
+           [(MonthDelta) (lambda (start)
+                           (month->string
+                            (gnc:time64-get-month start)))]
+           [(WeekDelta) (lambda (start)
+                          (number->string
+                           (1+ (modulo
+                                (- (gnc:time64-get-week start) 9)
+                                52))))]
+           [else (raise-exception 'invalid-delta)])])
+    (map (lambda (extent-change)
+           (let ([start (extent-begin
+                         (extent-change-extent extent-change))])
+             (converter start)))
+         (account-trend-vals acct-trend))))
+
+(define (account-trend-values acct-trend)
+  (map (lambda (extent-change)
+         (extent-change-change extent-change))
+       (account-trend-vals acct-trend)))
