@@ -172,12 +172,9 @@
         (extent-collection-extents extent-coll))))
 
 (define* (prev-year-start-date #:optional (num-years 1))
-  (let loop ([num-years num-years]
-             [dt (decdate (gnc:get-start-next-month) YearDelta)])
-    (if (<= num-years 1)
-        dt
-        (loop (1- num-years)
-              (decdate dt YearDelta)))))
+  (if (<= num-years 1)
+      (decdate (gnc:get-start-next-month) YearDelta)
+      (decdate (prev-year-start-date (1- num-years)) YearDelta)))
 
 (define (delta->num-extents delta)
   (case delta
