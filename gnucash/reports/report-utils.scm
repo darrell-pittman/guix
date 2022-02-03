@@ -171,8 +171,13 @@
    (map (extent-value acct)
         (extent-collection-extents extent-coll))))
 
-(define (prev-year-start-date)
-  (decdate (gnc:get-start-next-month) YearDelta))
+(define* (prev-year-start-date #:optional (num-years 1))
+  (let loop ([num-years num-years]
+             [dt (decdate (gnc:get-start-next-month) YearDelta)])
+    (if (<= num-years 1)
+        dt
+        (loop (1- num-years)
+              (decdate dt YearDelta)))))
 
 (define (delta->num-extents delta)
   (case delta
@@ -180,12 +185,12 @@
     ((WeekDelta) 52)
     (else (raise-exception 'invalid-delta))))
 
-(define (prev-year-extents delta)
+(define* (prev-year-extents delta #:optional (num-years 1))
   (make-extent-collection
    delta
    (make-extents
-    (prev-year-start-date)
-    (delta->num-extents delta)
+    (prev-year-start-date num-years)
+    (* (delta->num-extents delta) num-years)
     (eval delta (interaction-environment)))))
 
 (define (format-extent extent)

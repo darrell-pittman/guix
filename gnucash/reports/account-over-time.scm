@@ -23,8 +23,12 @@
 (define (account-over-time-renderer report-obj)
   (let* ([document (gnc:make-html-document)]
          [chart (gnc:make-html-chart)]
-         [acct (wgc:find-account "Expenses:Groceries")]
-         [curr (xaccAccountGetCommodity acct)])
+         [acct-name "Expenses:Auto:Gas"]
+         [acct (wgc:find-account acct-name)]
+         [acct-2-name "Expenses:Groceries"]
+         [acct-2 (wgc:find-account acct-2-name)]
+         [curr (xaccAccountGetCommodity acct)]
+         [num-years 2])
 
     (gnc:html-chart-set-title! chart "Accounts Over Time")
     (gnc:html-chart-set-type! chart 'line)
@@ -43,7 +47,10 @@
 
     (let* ([trend (wgc:account-trend
                    acct
-                   (wgc:prev-year-extents 'MonthDelta))])
+                   (wgc:prev-year-extents 'MonthDelta num-years))]
+           [trend-2 (wgc:account-trend
+                     acct-2
+                     (wgc:prev-year-extents 'MonthDelta num-years))])
       
       (gnc:html-chart-set-data-labels!
        chart
@@ -51,9 +58,18 @@
       
       (gnc:html-chart-add-data-series!
        chart
-       "Expenses:Groceries"
+       (wgc:account-name acct)
        (wgc:account-trend-get-values trend)
        (gnc:assign-colors 3)
+       'border-width 1
+       'fill #f)
+
+
+      (gnc:html-chart-add-data-series!
+       chart
+       (wgc:account-name acct-2)
+       (wgc:account-trend-get-values trend-2)
+       (gnc:assign-colors 1)
        'border-width 1
        'fill #f))
     
