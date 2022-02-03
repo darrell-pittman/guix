@@ -27,14 +27,17 @@
             (gnc:register-option options new-option))])
 
     (add-option
-     (gnc:make-account-list-option
+     (gnc:make-account-list-limited-option
       gnc:pagename-display optname-account
-      "g" (N_ "Report Account")
+      "g"
+      (N_ "Report Account")
       (lambda ()
 	(list
 	 (wgc:find-account
 	  (gnc:account-get-type-string-plural ACCT-TYPE-EXPENSE))))
-      #f #t))
+      #f
+      #t
+      (list ACCT-TYPE-EXPENSE)))
 
     (add-option
      (gnc:make-number-range-option
@@ -50,10 +53,11 @@
     (add-option
      (gnc:make-multichoice-option
       gnc:pagename-display optname-delta
-      "b" (N_ "Time gap between data samples") 'MonthDelta
+      "b"
+      (N_ "Time gap between data samples")
+      'MonthDelta
       (list (vector 'MonthDelta (N_ "Month"))
             (vector 'WeekDelta (N_ "Week")))))
-
     
     (gnc:options-set-default-section options gnc:pagename-display)
     options))
@@ -113,6 +117,7 @@
                 (cdr colours)))))
     
     (gnc:html-document-add-object! document chart)
+    
     document))
 
 (gnc:define-report
