@@ -75,10 +75,8 @@
          [num-years (op-value gnc:pagename-display optname-num-years)]
          [delta (op-value gnc:pagename-display optname-delta)]
          [extents (wgc:prev-year-extents delta num-years)]
-         [colours (wgc:random-colours
-                   (min (max (* 2 (length accounts)) 6)
-                        wgc:max-colors))])
-
+         [colours (wgc:random-colours (length accounts))])
+    
     (gnc:html-chart-set-title! chart "Accounts Over Time")
     (gnc:html-chart-set-type! chart 'line)
     (gnc:html-chart-set-width! chart '(pixels . 800))

@@ -28,8 +28,7 @@
             extent-change-change
             account-trend-get-data-labels
             account-trend-get-values
-            random-colours
-            max-colors))
+            random-colours))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 (gnc:module-load "gnucash/html" 0) ;for gnc-build-url
@@ -254,4 +253,6 @@
                 (cons (list-ref ls random) randomized))))))
 
 (define (random-colours n)
-  (randomize-list (gnc:assign-colors n)))
+  (randomize-list (gnc:assign-colors
+                   (min (max (* 2 n) 6)
+                        max-colors))))
