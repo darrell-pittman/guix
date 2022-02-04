@@ -43,9 +43,9 @@
      (gnc:make-number-range-option
       gnc:pagename-display optname-num-years
       "ee" (N_ "Number of years to report.")
-      1     ;; default
+      2     ;; default
       1     ;; lower bound
-      2    ;; upper bound
+      3    ;; upper bound
       0     ;; number of decimals
       1     ;; step size
       ))
@@ -79,8 +79,8 @@
     
     (gnc:html-chart-set-title! chart "Accounts Over Time")
     (gnc:html-chart-set-type! chart 'line)
-    (gnc:html-chart-set-width! chart '(pixels . 800))
-    (gnc:html-chart-set-height! chart '(pixels . 600))
+    ;;(gnc:html-chart-set-width! chart '(pixels . 800))
+    ;;(gnc:html-chart-set-height! chart '(pixels . 600))
 
     (gnc:html-chart-set-y-axis-label! chart "Amount")
 
