@@ -79,6 +79,7 @@
     
     (gnc:html-chart-set-title! chart "Accounts Over Time")
     (gnc:html-chart-set-type! chart 'line)
+    (gnc:html-chart-set! chart '(options ticks min) 0)
     ;;(gnc:html-chart-set-width! chart '(pixels . 800))
     ;;(gnc:html-chart-set-height! chart '(pixels . 600))
 
