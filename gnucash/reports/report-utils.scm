@@ -241,19 +241,17 @@
        (account-trend-vals acct-trend)))
 
 (define (randomize-list ls)
-  (let loop ([len (length ls)]
-             [ls ls]
+  (let loop ([ls ls]
              [randomized '()])
-    (if (= (length randomized) len)
+    (if (null? ls)
         randomized
         (let ([random (random-integer (length ls))])
-          (loop len
-                (append (take ls random)
+          (loop (append (take ls random)
                         (drop ls (1+ random)))
                 (cons (list-ref ls random) randomized))))))
 
 (define (random-colours n)
-  (take (randomize-list (gnc:assign-colors
-                         (min (max (* 2 n) 6)
-                              max-colors)))
+  (take (randomize-list
+         (gnc:assign-colors (min (max (* 2 n) 6)
+                                 max-colors)))
         n))
