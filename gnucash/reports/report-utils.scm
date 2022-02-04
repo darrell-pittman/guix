@@ -253,6 +253,7 @@
                 (cons (list-ref ls random) randomized))))))
 
 (define (random-colours n)
-  (randomize-list (gnc:assign-colors
-                   (min (max (* 2 n) 6)
-                        max-colors))))
+  (take (randomize-list (gnc:assign-colors
+                         (min (max (* 2 n) 6)
+                              max-colors)))
+        n))
