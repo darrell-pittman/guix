@@ -5,6 +5,7 @@
   #:use-module (gnucash gnc-module)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-27)
   #:export (account-change
             account-change-rec-extent
             account-change-rec-node
@@ -26,10 +27,14 @@
             extent-change-extent
             extent-change-change
             account-trend-get-data-labels
-            account-trend-get-values))
+            account-trend-get-values
+            random-colours
+            max-colors))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 (gnc:module-load "gnucash/html" 0) ;for gnc-build-url
+
+(define max-colors 18)
 
 (define account-name xaccAccountGetName)
 
@@ -235,3 +240,18 @@
   (map (lambda (extent-change)
          (extent-change-change extent-change))
        (account-trend-vals acct-trend)))
+
+(define (randomize-list ls)
+  (let loop ([len (length ls)]
+             [ls ls]
+             [randomized '()])
+    (if (= (length randomized) len)
+        randomized
+        (let ([random (random-integer (length ls))])
+          (loop len
+                (append (take ls random)
+                        (drop ls (1+ random)))
+                (cons (list-ref ls random) randomized))))))
+
+(define (random-colours n)
+  (randomize-list (gnc:assign-colors n)))
