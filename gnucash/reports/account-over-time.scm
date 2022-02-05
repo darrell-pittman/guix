@@ -92,11 +92,12 @@
          [accounts (op-value gnc:pagename-display optname-account)]
          [num-years (op-value gnc:pagename-display optname-num-years)]
          [show-table (op-value gnc:pagename-display optname-show-table)]
+         [report-name (op-value gnc:pagename-general wgc:optname-report-name)]
          [delta (op-value gnc:pagename-display optname-delta)]
          [extents (wgc:prev-year-extents delta num-years)]
          [colours (wgc:random-colours (length accounts))])
     
-    (gnc:html-chart-set-title! chart "Accounts Over Time")
+    (gnc:html-chart-set-title! chart report-name)
     (gnc:html-chart-set-type! chart 'line)
     (gnc:html-chart-set! chart '(options ticks min) 0)
     ;;(gnc:html-chart-set-width! chart '(pixels . 800))
@@ -141,10 +142,11 @@
                         (gnc:make-html-table-header-cell
                          (gnc:make-html-text
                           (gnc:html-markup-b lbl))))
-                      (append (cons "Account" labels) '("Total")))))))
+                      (append (cons "Account" labels) '("Avg" "Total")))))))
 
           (let* ([vals (wgc:account-trend-get-values trend)]
-                 [total (apply + vals)])
+                 [total (apply + vals)]
+                 [avg (/ total (length (wgc:extent-collection-extents extents)))])
             
             (gnc:html-chart-add-data-series!
              chart
@@ -160,12 +162,12 @@
                     (gnc:make-html-text
                      (gnc:html-markup-b (wgc:account-name acct))))
                    (map make-value-cell
-                        (append vals (list total))))))
+                        (append vals (list avg total))))))
 
           (loop (cdr accounts)
                 (1+ iter)
                 (cdr colours)))))
-    
+
     (gnc:html-document-add-object! document chart)
     
     (when show-table

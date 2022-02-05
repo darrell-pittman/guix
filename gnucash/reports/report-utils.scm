@@ -3,6 +3,7 @@
   #:use-module (gnucash utilities)
   #:use-module (gnucash app-utils)
   #:use-module (gnucash gnc-module)
+  #:use-module (gnucash core-utils)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-27)
@@ -28,12 +29,14 @@
             extent-change-change
             account-trend-get-data-labels
             account-trend-get-values
-            random-colours))
+            random-colours
+            optname-report-name))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 (gnc:module-load "gnucash/html" 0) ;for gnc-build-url
 
 (define max-colors 18)
+(define optname-report-name (N_ "Report name"))
 
 (define account-name xaccAccountGetName)
 
