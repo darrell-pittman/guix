@@ -74,6 +74,10 @@ fi
 
 
 if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
+  export XDG_SESSION_TYPE=wayland
+  export XDG_SESSION_DESKTOP=sway
+  export XDG_CURRENT_DESKTOP=sway
+  export LIBSEAT_BACKEND=logind
   dbus-run-session sway
 fi
 
