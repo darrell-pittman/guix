@@ -47,4 +47,9 @@
 	"zip"
 	"exercism"
 	"make"
-        "light"))
+        "light"
+        "blender"
+        "mesa-utils"
+        "lshw"
+        "radeontop"
+        "glmark2"))

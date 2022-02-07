@@ -41,14 +41,14 @@
 
 (operating-system
  (kernel linux)
- (kernel-arguments (cons* "video=1280x720" 
-                          "amdgpu.si_support=1"
-                          "radeon.si_support=0"
-                          "amdgpu.dc=1"
+ (kernel-arguments (cons* "video=1280x720"
+                          "radeon.si_support=1"
+                          "radeon.cik_support=1"
+                          "radeon.dpm=1"
                           %default-kernel-arguments))
  (initrd microcode-initrd)
  (firmware (cons* iwlwifi-firmware
-                  amdgpu-firmware
+                  radeon-firmware
                   ibt-hw-firmware
                   %base-firmware))
  (host-name "guix_laptop")
@@ -114,7 +114,7 @@
                    %base-packages))
 
  ;; Add services to the baseline: a DHCP client
- (services (append (list 
+ (services (append (list
                     fontconfig-file-system-service
                     (service sane-service-type)
                     (service cups-service-type
