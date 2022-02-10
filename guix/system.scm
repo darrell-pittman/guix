@@ -45,6 +45,7 @@
                           "radeon.si_support=1"
                           "radeon.cik_support=1"
                           "radeon.dpm=1"
+                          "radeon.runpm=0"
                           %default-kernel-arguments))
  (initrd microcode-initrd)
  (firmware (cons* iwlwifi-firmware
