@@ -44,6 +44,8 @@
  (kernel-arguments (cons* "video=1280x720"
                           "radeon.si_support=1"
                           "radeon.cik_support=1"
+                          "amdgpu.si_support=0"
+                          "amdgpu.cik_support=0"
                           "radeon.dpm=1"
                           "radeon.runpm=0"
                           %default-kernel-arguments))
