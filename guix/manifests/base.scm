@@ -52,4 +52,5 @@
         "mesa-utils"
         "lshw"
         "radeontop"
-        "glmark2"))
+        "glmark2"
+        "tree"))
