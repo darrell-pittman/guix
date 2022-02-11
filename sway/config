@@ -144,8 +144,6 @@ input type:keyboard {
 
     # App Assignments
     assign [app_id="firefox"] workspace number 1
-    assign [class="Emacs"] workspace number 2
-    assign [app_id="Alacritty"] workspace number 3
     assign [class="Blender"] workspace number 4
 #
 # Layout stuff:
@@ -249,22 +247,23 @@ bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
 bindsym $mod+Shift+s exec loginctl suspend
 bindsym $mod+Shift+Delete exec swaylock -f -c 000000
 
+# Look and Feel
+default_border pixel 2
+
 # Start user shepherd service
 exec shepherd
 
 # Apps
-bindsym $mod+bracketright exec $browser
-bindsym $mod+bracketleft exec DRI_PRIME=1 blender
+bindsym $mod+bracketright exec swaymsg 'exec $browser; workspace 1'
+bindsym $mod+bracketleft exec swaymsg 'exec DRI_PRIME=1 blender; workspace 4'
+
 # Font
 font pango:Fira Code Retina 12
 
 # Start Up
-exec nohup $browser &>/dev/null &
-exec nohup emacs &>/dev/null &
-exec $term &
-exec swaymsg [workspace="1"] focus
+exec swaymsg 'workspace 1; exec $browser && sleep 5; workspace 2; exec emacs; workspace 3; exec $term'
 
-default_border pixel 2
+
 
 include /home/darrell/config/sway/config.d/*
 
