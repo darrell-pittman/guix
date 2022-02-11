@@ -19,6 +19,10 @@ set $menu dmenu_path | dmenu | xargs swaymsg exec --
 # Browser setup
 set $browser firefox
 
+# Workspace Vars
+set $browser_workspace 1
+set $blender_workspace 4
+
 ### Output configuration
 #
 output * bg /home/darrell/config/sway/Sway_Wallpaper_Blue_1920x1080.png fill
@@ -112,13 +116,13 @@ input type:keyboard {
 #
 # Workspaces:
 #
-    set $web-ws "1[web]"
+    set $web-ws "$browser_workpsace[web]"
     set $code-ws "2[code]"
     # Switch to workspace
-    bindsym $mod+1 workspace number 1
+    bindsym $mod+$browser_workspace workspace number $browser_workspace
     bindsym $mod+2 workspace number 2
     bindsym $mod+3 workspace number 3
-    bindsym $mod+4 workspace number 4
+    bindsym $mod+$blender_workspace workspace number $blender_workspace
     bindsym $mod+5 workspace number 5
     bindsym $mod+6 workspace number 6
     bindsym $mod+7 workspace number 7
@@ -126,10 +130,10 @@ input type:keyboard {
     bindsym $mod+9 workspace number 9
     bindsym $mod+0 workspace number 10
     # Move focused container to workspace
-    bindsym $mod+Shift+1 move container to workspace number 1
+    bindsym $mod+Shift+$browser_workspace move container to workspace number $browser_workspace
     bindsym $mod+Shift+2 move container to workspace number 2
     bindsym $mod+Shift+3 move container to workspace number 3
-    bindsym $mod+Shift+4 move container to workspace number 4
+    bindsym $mod+Shift+$blender_workspace move container to workspace number $blender_workspace
     bindsym $mod+Shift+5 move container to workspace number 5
     bindsym $mod+Shift+6 move container to workspace number 6
     bindsym $mod+Shift+7 move container to workspace number 7
@@ -143,8 +147,8 @@ input type:keyboard {
 
 
     # App Assignments
-    assign [app_id="firefox"] workspace number 1
-    assign [class="Blender"] workspace number 4
+    assign [app_id="firefox"] workspace number $browser_workspace
+    assign [class="Blender"] workspace number $blender_workspace
 #
 # Layout stuff:
 #
@@ -254,14 +258,14 @@ default_border pixel 2
 exec shepherd
 
 # Apps
-bindsym $mod+bracketright exec swaymsg 'exec $browser; workspace 1'
-bindsym $mod+bracketleft exec swaymsg 'exec DRI_PRIME=1 blender; workspace 4'
+bindsym $mod+bracketright exec swaymsg 'exec $browser; workspace $browser_workspace'
+bindsym $mod+bracketleft exec swaymsg 'exec DRI_PRIME=1 blender; workspace $blender_workspace'
 
 # Font
 font pango:Fira Code Retina 12
 
 # Start Up
-exec swaymsg 'workspace 1; exec $browser && sleep 5; workspace 2; exec emacs; workspace 3; exec $term'
+exec swaymsg 'exec $browser && sleep 5; workspace 2; exec emacs; workspace 3; exec $term'
 
 
 
