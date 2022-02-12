@@ -175,7 +175,7 @@ Note the :tangle no after the begin_src block : this means that this block will 
       "g" '(:ignore t :which-key "git")
       "t" '(:ignore t :which-key "toggles")
       "e" '(:ignore t :which-key "edits")
-      "w" '(:ignore t :whick-key "window")
+      "w" '(:ignore t :which-key "window")
       "wk" '(windmove-swap-states-up :which-key "up")
       "wj" '(windmove-swap-states-down :which-key "down")
       "wh" '(windmove-swap-states-left :which-key "left")
