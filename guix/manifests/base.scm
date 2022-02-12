@@ -53,4 +53,5 @@
         "lshw"
         "radeontop"
         "glmark2"
-        "tree"))
+        "tree"
+        "gdb"))
