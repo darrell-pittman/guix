@@ -35,6 +35,30 @@ Note the :tangle no after the begin_src block : this means that this block will 
 #+end_src
 *  Helper Functions
 #+begin_src emacs-lisp
+  (defun wgc/rust-test (pattern)
+    "Runs rust-test with a test pattern."
+    (interactive
+     (let* ((has-history (and (boundp 'wgc/rust-test-history)
+                              (not (null wgc/rust-test-history))))
+            (prompt (if has-history
+                        (format "Test Pattern (Default: %s): "
+                                (car wgc/rust-test-history))
+                      "Test Pattern: ")))
+       (list (read-string prompt nil 'wgc/rust-test-history))))
+
+    (let ((pattern (if (= (length pattern) 0)
+                       (if (and (boundp 'wgc/rust-test-history)
+                                (not (null wgc/rust-test-history)))
+                           (car wgc/rust-test-history)
+                         "")
+                     pattern)))
+
+      (rust--compile (format "%s test %s" "%s"
+                             (if (string= pattern "*")
+                                 ""
+                               pattern))
+                     rust-cargo-bin)))
+
   (defun wgc/list-known-bindings (key)
     (interactive "kList known bindings for key: ")
     (with-current-buffer (get-buffer-create "*known bindings*")
@@ -70,14 +94,14 @@ Note the :tangle no after the begin_src block : this means that this block will 
     "Debug rust project"
     (interactive)
     (when (projectile-project-p)
-        (let* ((project-root (projectile-project-root))
-               (project-name (projectile-project-name))
-               (executable
-                (concat (file-name-as-directory project-root)
-                        (file-name-as-directory "target/debug")
-                        project-name)))
+      (let* ((project-root (projectile-project-root))
+             (project-name (projectile-project-name))
+             (executable
+              (concat (file-name-as-directory project-root)
+                      (file-name-as-directory "target/debug")
+                      project-name)))
 
-          (gdb (concat "rust-gdb -i=mi " executable)))))
+        (gdb (concat "rust-gdb -i=mi " executable)))))
 #+end_src
 * Interface Tweaks
 ** Look and Feel
@@ -671,25 +695,26 @@ Note the :tangle no after the begin_src block : this means that this block will 
 ** Languages
 *** Rust
 #+begin_src emacs-lisp
-    (use-package flycheck-rust
-      :commands flycheck-rust-setup)
+      (use-package flycheck-rust
+        :commands flycheck-rust-setup)
 
-    (use-package rust-mode
-      :custom
-      (rust-format-on-save t)
-      :hook
-      (flycheck-mode . flycheck-rust-setup)
-      (rust-mode . (lambda ()
-                     (lsp-deferred)
-                     (setq indent-tabs-mode nil)))
-      :config
-      (wgc/leader
-        :keymaps 'rust-mode-map
-        "br" 'rust-run
-        "bc" 'rust-compile
-        "bk" 'rust-check
-        "bt" 'rust-test
-        "bd" 'wgc/debug-rust))
+      (use-package rust-mode
+        :custom
+        (rust-format-on-save t)
+        :hook
+        (flycheck-mode . flycheck-rust-setup)
+        (rust-mode . (lambda ()
+                       (lsp-deferred)
+                       (setq indent-tabs-mode nil)))
+        :config
+        (wgc/leader
+          :keymaps 'rust-mode-map
+          "br" 'rust-run
+          "bc" 'rust-compile
+          "bk" 'rust-check
+          "bt" 'rust-test
+          "bd" 'wgc/debug-rust
+          "bi" 'wgc/rust-test))
 #+end_src
 *** C/C++
 #+begin_src emacs-lisp
