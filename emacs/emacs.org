@@ -544,6 +544,12 @@ Note the :tangle no after the begin_src block : this means that this block will 
   (wgc/leader
     "tr" 'recentf-open-files)
 #+end_src
+* Custom Files
+Write customizations to file to avoid polluting init.el
+#+begin_src emacs-lisp
+  (setq custom-file (locate-user-emacs-file "custom-vars.el"))
+  (load custom-file 'noerror 'nomessage)
+#+end_src
 * Shells
 ** Term
 #+begin_src emacs-lisp
