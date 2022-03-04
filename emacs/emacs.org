@@ -127,8 +127,8 @@ Note the :tangle no after the begin_src block : this means that this block will 
   #+end_src
 ** Fonts 
 #+begin_src emacs-lisp
-  (defvar wgc/default-font-size 140)
-  (defvar wgc/default-variable-font-size 140)
+  (defvar wgc/default-font-size 130)
+  (defvar wgc/default-variable-font-size 130)
 
   ;; Set default face
   (set-face-attribute
