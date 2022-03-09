@@ -33,4 +33,5 @@
     "emacs-modus-themes"
     "emacs-ace-window"
     "emacs-avy"
-    "emacs-rust-mode"))
+    "emacs-rust-mode"
+    "emacs-beacon"))
