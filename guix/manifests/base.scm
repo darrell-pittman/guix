@@ -54,4 +54,6 @@
         "radeontop"
         "glmark2"
         "tree"
-        "gdb"))
+        "gdb"
+        "neovim"
+        "ffmpeg"))
