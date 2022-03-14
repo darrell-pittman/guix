@@ -55,5 +55,5 @@
         "glmark2"
         "tree"
         "gdb"
-        "neovim"
-        "ffmpeg"))
+        "ffmpeg"
+        "vim"))
