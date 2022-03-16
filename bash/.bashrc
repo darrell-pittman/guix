@@ -81,3 +81,6 @@ if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
   dbus-run-session sway
 fi
 
+eval "$(fasd --init auto)"
+_fasd_bash_hook_cmd_complete v
+

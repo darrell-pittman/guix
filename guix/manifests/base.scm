@@ -56,4 +56,6 @@
         "tree"
         "gdb"
         "ffmpeg"
-        "vim"))
+        "vim-full"
+	"fasd"
+	"curl"))
