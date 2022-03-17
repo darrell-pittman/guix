@@ -131,7 +131,7 @@ let g:ctrlp_custom_ignore = {
 "----------------------------------------------------------Look and Feel
 set background=dark
 highlight LineNr ctermbg=238 ctermfg=253
-highlight Search ctermbg=251
+highlight Search ctermbg=088 ctermfg=206
 highlight CursorLine cterm=NONE ctermbg=237 ctermfg=NONE
 highlight CursorLineNr cterm=NONE ctermbg=232 ctermfg=015
 set cursorline
