@@ -54,7 +54,7 @@ endif
 
 
 
-"------------------------------------------------------------------Plugins
+"----------------------------------------------------------Plugins
 call plug#begin('~/.vim/plugged')
 
 Plug 'prabirshrestha/vim-lsp'
@@ -64,7 +64,7 @@ Plug 'prabirshrestha/asyncomplete-lsp.vim'
 call plug#end()
 	
 
-"------------------------------------------------------------------LSP
+"----------------------------------------------------------LSP
 if executable('rust-analyzer')
 	au User lsp_setup call lsp#register_server({
 	\   'name': 'Rust Language Server',
@@ -109,11 +109,42 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
 imap <c-@> <Plug>(asyncomplete_force_refresh)
 
-"------------------------------------------------------------------Options
+"----------------------------------------------------------Options
 set hidden
+set nowrap
+set relativenumber
+set directory=$HOME/.vim/swap_files//
+set backupdir=$HOME/.vim/backup_files//
+set undodir=$HOME/.vim/undo_files//
 
-"------------------------------------------------------------------Key Mappings
-let mapleader = "'"
-let maplocalleader = ","
-imap jk <Esc>
+"----------------------------------------------------------Ctrl-P
+" Load Ctrl-P
+set runtimepath^=$HOME/.vim/bundle/ctrlp.vim
+
+" Setup ignores for Ctrl-P
+set wildignore+=*/.git
+let g:ctrlp_custom_ignore = {
+			\ 'dir': '\v[\/]target$',
+			\ 'file': '\v[\/]target\/.*$',
+			\ }
+
+"----------------------------------------------------------Look and Feel
+set background=dark
+highlight LineNr ctermbg=238 ctermfg=253
+highlight Search ctermbg=251
+highlight CursorLine cterm=NONE ctermbg=237 ctermfg=NONE
+highlight CursorLineNr cterm=NONE ctermbg=232 ctermfg=015
+set cursorline
+set numberwidth=3
+
+"----------------------------------------------------------Key Mappings
+let mapleader = ","
+let maplocalleader = "'"
+inoremap jk <Esc>
+nnoremap <leader>u :execute "normal! mqviwU`q" <bar> delmark q<cr>
+nnoremap <leader>ev :vsplit $MYVIMRC<cr>
+nnoremap <leader>sv :source $MYVIMRC<cr>
+
+"----------------------------------------------------------Rust
+cabbrev ct !cargo test --lib
 

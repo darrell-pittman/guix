@@ -5,8 +5,7 @@
 ;; See the "Replicating Guix" section in the manual.
 
 (specifications->manifest
-  (list "adwaita-icon-theme"
-        "xdot"
+  (list "xdot"
         "graphviz"
         "gimp"
         "ripgrep"
@@ -56,6 +55,5 @@
         "tree"
         "gdb"
         "ffmpeg"
-        "vim-full"
-	"fasd"
+        "vim"
 	"curl"))

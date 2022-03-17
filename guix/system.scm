@@ -165,6 +165,8 @@
                     (guix-service-type
                      config => (guix-configuration
                                 (inherit config)
+				(extra-options '("--gc-keep-derivations=yes"
+						 "--gc-keep-outputs=yes"))
                                 (substitute-urls
                                  (append (list "https://substitutes.nonguix.org")
                                          %default-substitute-urls))
