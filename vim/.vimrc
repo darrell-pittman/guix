@@ -165,6 +165,7 @@ nnoremap <leader>u :execute "normal! mqviwU`q" <bar> delmark q<cr>
 nnoremap <leader>ev :vsplit $MYVIMRC<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
 nnoremap <leader>n :nohlsearch<cr>
+nnoremap <leader>g :Git<cr>
 let g:ctrlp_map = '<leader>f'
 
 "----------------------------------------------------------Rust
