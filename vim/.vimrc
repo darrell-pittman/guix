@@ -1,18 +1,3 @@
-
-" An example for a vimrc file.
-"
-" Maintainer:	Bram Moolenaar <Bram@vim.org>
-" Last change:	2019 Dec 17
-"
-" To use it, copy it to
-"	       for Unix:  ~/.vimrc
-"	      for Amiga:  s:.vimrc
-"	 for MS-Windows:  $VIM\_vimrc
-"	      for Haiku:  ~/config/settings/vim/vimrc
-"	    for OpenVMS:  sys$login:.vimrc
-
-" When started as "evim", evim.vim will already have done these settings, bail
-" out.
 if v:progname =~? "evim"
     finish
 endif
@@ -24,14 +9,6 @@ if has("vms")
     set nobackup		" do not keep a backup file, use versions instead
 else
     set backup		" keep a backup file (restore to previous version)
-    if has('persistent_undo')
-        set undofile	" keep an undo file (undo changes after closing)
-    endif
-endif
-
-if &t_Co > 2 || has("gui_running")
-    " Switch on highlighting the last used search pattern.
-    set hlsearch
 endif
 
 " Put these in an autocmd group, so that we can delete them easily.
@@ -61,7 +38,6 @@ Plug 'prabirshrestha/vim-lsp'
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'tpope/vim-fugitive'
-Plug 'agude/vim-eldar'
 
 call plug#end()
 
@@ -99,6 +75,7 @@ function! s:on_lsp_buffer_enabled() abort
 
     highlight LspWarningHighlight cterm=underline
     highlight LspErrorHighlight cterm=underline
+    highlight LspReference cterm=NONE
 
     let g:asyncomplete_auto_popup = 0
 
@@ -112,8 +89,6 @@ function! s:on_lsp_buffer_enabled() abort
                 \ <SID>check_back_space() ? "\<TAB>" :
                 \ asyncomplete#force_refresh()
     inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-    
-    " refer to doc to add more commands
 
 endfunction
 
@@ -136,37 +111,52 @@ set nowrap
 set relativenumber
 set number
 
-set directory=$HOME/.vim/swap_files//
-set backupdir=$HOME/.vim/backup_files//
-set undodir=$HOME/.vim/undo_files//
-setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+set directory=$HOME/backups/vim/swap_files//
+set backupdir=$HOME/backups/vim/backup_files//
+set undodir=$HOME/backups/vim/undo_files//
+set tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+set path+=.,**
+set wildignore+=**/debug/**
+set wildignore+=**/release/**
+set wildignore+=**/.git/**
 
 "----------------------------------------------------------Ctrl-P
 " Load Ctrl-P
-set runtimepath^=$HOME/.vim/bundle/ctrlp.vim
-
-" Setup ignores for Ctrl-P
-set wildignore+=*/.git
-let g:ctrlp_custom_ignore = {
-            \ 'dir': '\v[\/]target$',
-            \ 'file': '\v[\/]target\/.*$',
-            \ }
+"set runtimepath^=$HOME/.vim/bundle/ctrlp.vim
+"
+"" Setup ignores for Ctrl-P
+"set wildignore+=*/.git
+"let g:ctrlp_custom_ignore = {
+"            \ 'dir': '\v[\/]target$',
+"            \ 'file': '\v[\/]target\/.*$',
+"            \ }
+"let g:ctrlp_map = '<leader>f'
 
 "----------------------------------------------------------Look and Feel
 set background=dark
 set numberwidth=3
-colorscheme eldar
+colorscheme murphy
 
 "----------------------------------------------------------Key Mappings
 let mapleader = ","
 let maplocalleader = "'"
 inoremap jk <Esc>
-nnoremap <leader>u :execute "normal! mqviwU`q" <bar> delmark q<cr>
+nnoremap <leader>u gUiw
 nnoremap <leader>ev :vsplit $MYVIMRC<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
-nnoremap <leader>n :nohlsearch<cr>
 nnoremap <leader>g :Git<cr>
-let g:ctrlp_map = '<leader>f'
+nnoremap <leader>f :find<space>
+
+"Turn off arrow keys
+noremap <left> <Nop>
+noremap <right> <Nop>
+noremap <up> <Nop>
+noremap <down> <Nop>
+inoremap <left> <Nop>
+inoremap <right> <Nop>
+inoremap <up> <Nop>
+inoremap <down> <Nop>
+
 
 "----------------------------------------------------------Rust
 augroup rust_group
