@@ -1,3 +1,4 @@
+"----------------------------------------------------------Defaults
 if v:progname =~? "evim"
     finish
 endif
@@ -29,6 +30,11 @@ if has('syntax') && has('eval')
     packadd! matchit
 endif
 
+"----------------------------------------------------------Look and Feel
+set background=dark
+set numberwidth=3
+colorscheme murphy
+highlight ColorColumn ctermbg=236
 
 
 "----------------------------------------------------------Plugins
@@ -110,6 +116,7 @@ set hidden
 set nowrap
 set relativenumber
 set number
+set colorcolumn=80
 
 set directory=$HOME/backups/vim/swap_files//
 set backupdir=$HOME/backups/vim/backup_files//
@@ -119,6 +126,7 @@ set path+=.,**
 set wildignore+=**/debug/**
 set wildignore+=**/release/**
 set wildignore+=**/.git/**
+set listchars=tab:>-,lead:.,trail:.
 
 "----------------------------------------------------------Ctrl-P
 " Load Ctrl-P
@@ -132,13 +140,9 @@ set wildignore+=**/.git/**
 "            \ }
 "let g:ctrlp_map = '<leader>f'
 
-"----------------------------------------------------------Look and Feel
-set background=dark
-set numberwidth=3
-colorscheme murphy
-
 "----------------------------------------------------------Key Mappings
-let mapleader = ","
+nnoremap <space> <nop>
+let mapleader = " "
 let maplocalleader = "'"
 inoremap jk <Esc>
 nnoremap <leader>u gUiw
@@ -161,8 +165,9 @@ inoremap <down> <Nop>
 "----------------------------------------------------------Rust
 augroup rust_group
     autocmd!
-    autocmd FileType rust cabbrev ct !cargo test --lib
-    autocmd FileType rust cabbrev cr !cargo run --release --bin
+    autocmd FileType rust cabbrev <buffer> ct !cargo test --lib
+    autocmd FileType rust cabbrev <buffer> cr !cargo run --release --bin
+    autocmd FileType rust cabbrev <buffer> rf **/*.rs
     autocmd FileType rust nnoremap <buffer> <leader>bk :!cargo check<cr>
     autocmd FileType rust nnoremap <buffer> <leader>bc :!cargo build<cr>
     autocmd FileType rust nnoremap <buffer> <leader>bcr :!cargo build --release<cr>
