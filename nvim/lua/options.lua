@@ -1,35 +1,31 @@
 local home = require('wgc.utils').home
 
-local o = vim.o
-local bo = vim.bo
-local wo = vim.wo
-local opt = vim.opt
+local set = vim.opt
 
-o.tabstop = 2
-o.softtabstop = 2
-o.shiftwidth = 2
-o.expandtab = true
-o.hidden = true
-o.background = 'dark'
-o.termguicolors = false
-o.syntax = 'on'
-o.directory = home()..'/backups/vim/swapfiles//'
-o.backupdir = home()..'/backups/vim/backup_files//'
-o.undofile = false
-o.colorcolumn = '80'
-o.completeopt = 'menuone,noinsert,noselect'
-o.hlsearch = false
+set.tabstop = 2
+set.softtabstop = 2
+set.shiftwidth = 2
+set.expandtab = true
+set.hidden = true
+set.background = 'dark'
+set.termguicolors = false
+set.syntax = 'on'
+set.directory = home()..'/backups/vim/swapfiles//'
+set.backupdir = home()..'/backups/vim/backup_files//'
+set.undofile = false
+set.colorcolumn = '80'
+set.completeopt = 'menuone,noinsert,noselect'
+set.hlsearch = false
 
-opt.listchars = { tab = '>-', lead = '.', trail = '.' }
-opt.path:append {'.','**'}
-opt.wildignore:append {'**/debug/**', '**/release/**','**/.git/**'}
+set.listchars = { tab = '>-', lead = '.', trail = '.' }
+set.path:append {'.','**'}
+set.wildignore:append {'**/debug/**', '**/release/**','**/.git/**'}
 
-bo.autoindent = true
-bo.smartindent = true
-
-wo.signcolumn = 'yes'
-wo.wrap = false
-wo.number = true
-wo.relativenumber = true
-wo.numberwidth = 3
+set.autoindent = true
+set.smartindent = true
+set.signcolumn = 'yes'
+set.wrap = false
+set.number = true
+set.relativenumber = true
+set.numberwidth = 3
 

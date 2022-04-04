@@ -1,7 +1,7 @@
 local utils = require('wgc.utils')
 
-local silent_mapper = utils.make_mapper { noremap = true, silent = true} 
-local silent_buf_mapper = utils.make_buf_mapper { noremap = true, silent = true} 
+local silent_mapper = utils.make_mapper { silent = true} 
+local silent_buf_mapper = utils.make_mapper { buffer = true, silent = true} 
 
 -- LSP
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
@@ -30,7 +30,7 @@ local on_attach = function(client, bufnr)
   silent_buf_mapper(bufnr, 'n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>')
   silent_buf_mapper(bufnr, 'n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>')
   silent_buf_mapper(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>')
-  silent_buf_mapper(bufnr, 'n', '<leader>ff', '<cmd>lua vim.lsp.buf.formatting()<CR>')
+  silent_buf_mapper(bufnr, 'n', '<leader>t', '<cmd>lua vim.lsp.buf.formatting()<CR>')
 end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
