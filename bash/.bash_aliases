@@ -6,7 +6,5 @@ alias ds=lynx-google
 alias ec='emacsclient -c -a ""'
 alias btc='bluetoothctl connect $(bluetoothctl devices|head -1|cut -d " " -f 2)'
 alias btd='bluetoothctl disconnect'
-
-#fasd aliases
-
-alias v='f -e vim' # quick opening files with vim
+alias rss='herd start redshift'
+alias rsp='herd stop redshift'
