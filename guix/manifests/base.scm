@@ -59,4 +59,7 @@
         "vim"
         "neovim"
         "lua"
-        "curl"))
+        "curl"
+        "octave"
+        "libreoffice"
+        "gcc"))

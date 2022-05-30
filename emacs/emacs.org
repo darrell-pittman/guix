@@ -506,6 +506,16 @@ Note the :tangle no after the begin_src block : this means that this block will 
   (add-hook 'org-mode-hook
 	    (lambda () (add-hook 'after-save-hook #'wgc/tangle-configs)))
 #+end_src
+** Org Roam
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :ensure t
+    :custom (org-roam-directory "~/roam-notes")
+    :bind (("C-c n l" . org-roam-buffer-toggle)
+           ("C-c n f" . org-roam-node-find)
+           ("C-c n i" . org-roam-node-insert))
+    :config (org-roam-setup))
+#+end_src
 * Paredit
 #+begin_src emacs-lisp
   (use-package paredit

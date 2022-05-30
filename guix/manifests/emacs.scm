@@ -15,7 +15,7 @@
     "emacs-orderless"
     "emacs-consult"
     "emacs-marginalia"
-    "emacs-helpful"
+;    "emacs-helpful"
     "emacs-dired-hacks"
     "emacs-all-the-icons"
     "emacs-all-the-icons-dired"
@@ -34,4 +34,5 @@
     "emacs-ace-window"
     "emacs-avy"
     "emacs-rust-mode"
-    "emacs-beacon"))
+    "emacs-beacon"
+    "emacs-org-roam"))

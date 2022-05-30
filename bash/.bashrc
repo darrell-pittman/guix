@@ -82,3 +82,6 @@ if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
 fi
 
 
+btc() {
+  bluetoothctl connect $(bluetoothctl devices|tail -$1|head -1|cut -d " " -f 2)
+}
