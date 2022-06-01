@@ -83,5 +83,6 @@ fi
 
 
 btc() {
-  bluetoothctl connect $(bluetoothctl devices|tail -$1|head -1|cut -d " " -f 2)
+  bluetoothctl connect \
+    $(bluetoothctl devices|sort|head -$1|tail -1|cut -d " " -f 2)
 }
