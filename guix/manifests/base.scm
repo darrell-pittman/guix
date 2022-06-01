@@ -56,7 +56,6 @@
         "tree"
         "gdb"
         "ffmpeg"
-        "vim"
         "neovim"
         "lua"
         "curl"
