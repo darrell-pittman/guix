@@ -45,6 +45,7 @@
         "pkg-config"
         "alsa-lib"
         "zip"
+        "unzip"
         "exercism"
         "make"
         "light"
@@ -61,4 +62,7 @@
         "curl"
         "octave"
         "libreoffice"
-        "gcc"))
+        "gcc"
+        "qtwayland"
+        "gnuplot"
+        "simple-scan"))

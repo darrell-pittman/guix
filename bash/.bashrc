@@ -83,6 +83,10 @@ fi
 
 
 btc() {
+  local DEVICE_NUM="${1:-1}"
   bluetoothctl connect \
-    $(bluetoothctl devices|sort|head -$1|tail -1|cut -d " " -f 2)
+    $(bluetoothctl devices|sort|head -$DEVICE_NUM|tail -1|cut -d " " -f 2)
 }
+
+export EDITOR='nvim'
+export VISUAL='nvim'
