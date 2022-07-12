@@ -65,4 +65,6 @@
         "gcc"
         "qtwayland"
         "gnuplot"
-        "simple-scan"))
+        "simple-scan"
+        "vulkan-tools"
+        "mesa"))

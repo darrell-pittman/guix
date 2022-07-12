@@ -9,6 +9,8 @@
              (gnu services sound)
              (gnu services cups)
              (gnu packages cups)
+             (guix packages)
+             (srfi srfi-1)
              (nongnu packages linux)
              (nongnu system linux-initrd))
 
@@ -39,19 +41,30 @@
                   ", SUBSYSTEM==\"backlight\""
                   ", RUN+=\"/bin/chmod g+w /sys/class/backlight/%k/brightness\"")))
 
+(define-public linux-si-support
+  (package
+    (inherit linux-5.18)
+    (native-inputs
+     `(("kconfig" ,(local-file "amdgpu_si.config"))
+      ,@(alist-delete "kconfig"
+                      (package-native-inputs linux))))))
 (operating-system
- (kernel linux)
+ (kernel linux-si-support)
  (kernel-arguments (cons* "video=1280x720"
-                          "radeon.si_support=1"
-                          "radeon.cik_support=1"
-                          "amdgpu.si_support=0"
-                          "amdgpu.cik_support=0"
-                          "radeon.dpm=1"
-                          "radeon.runpm=0"
+                          "radeon.si_support=0"
+                          "radeon.cik_support=0"
+                          "amdgpu.si_support=1"
+                          "amdgpu.cik_support=1"
+                          ;;"radeon.dpm=1"
+                          ;;"radeon.runpm=0"
+                          "amdgpu.dc=1"
+                          "amdgpu.dpm=1"
+                          "amdgpu.runpm=1"
                           %default-kernel-arguments))
  (initrd microcode-initrd)
  (firmware (cons* iwlwifi-firmware
-                  radeon-firmware
+                  ;;radeon-firmware
+                  amdgpu-firmware
                   ibt-hw-firmware
                   %base-firmware))
  (host-name "guix_laptop")
