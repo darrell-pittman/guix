@@ -83,7 +83,19 @@ fi
 
 
 btc() {
-  local DEVICE_NUM="${1:-1}"
+  local DEVICE="${1:-sony}"
+  local DEVICE_NUM=1
+
+  DEVICE=${DEVICE,,}
+
+  echo "Device: ${DEVICE}"
+  if [[ $DEVICE == "sony" ]]
+  then
+    DEVICE_NUM=1
+  elif [[ $DEVICE == "galaxy" ]]
+  then
+    DEVICE_NUM=2
+  fi
   bluetoothctl connect \
     $(bluetoothctl devices|sort|head -$DEVICE_NUM|tail -1|cut -d " " -f 2)
 }
