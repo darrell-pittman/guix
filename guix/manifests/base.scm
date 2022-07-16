@@ -67,4 +67,5 @@
         "gnuplot"
         "simple-scan"
         "vulkan-tools"
-        "mesa"))
+        "mesa"
+        "ncurses"))
