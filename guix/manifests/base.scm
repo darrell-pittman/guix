@@ -68,4 +68,5 @@
         "simple-scan"
         "vulkan-tools"
         "mesa"
-        "ncurses"))
+        "ncurses"
+        "glibc"))

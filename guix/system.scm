@@ -57,6 +57,7 @@
                            "amdgpu.cik_support=1"
                            "amdgpu.dpm=1"
                            "amdgpu.runpm=1"
+                           "amdgpu.dc=1"
                            %default-kernel-arguments))
   (initrd microcode-initrd)
   (firmware (cons* iwlwifi-firmware
